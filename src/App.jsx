@@ -7,6 +7,7 @@ import {
 
 import Site from './components/Site';
 import SignIn from './SignIn';
+import Otp from './Otp';
 
 const App = () => 
 {
@@ -14,6 +15,7 @@ const App = () =>
         <BrowserRouter>
             <Routes>
                 <Route path='/' element={<SignIn />} />
+                <Route path='/otp' element={<Otp />} />
                 <Route path='/site' element={<Site />} />
             </Routes>
         </BrowserRouter>)

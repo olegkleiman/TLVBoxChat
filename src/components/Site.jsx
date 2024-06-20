@@ -1,18 +1,26 @@
 import React, {useRef, useState, useContext, useEffect} from 'react';
+import { useNavigate, useLocation } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 const Site = ({match}) => {
 
     const dfMessenger = useRef(null);
+    const {state} = useLocation();
 
     useEffect(() => {
         window.addEventListener('df-user-input-entered', (event) => {
             console.log(event.detail.input);
+            
+            const token = jwtDecode(state.jwt);
+            console.log(token);
+
             const queryParams = {
                   parameters:{
-                    "User_Authorized":"True",
-                    "User_Id": "313069486",
-                    "Information_Name":"Oleg Kleiman",
-                    "Information_Email":"oleg_kleyman@yahoo.com",
+                    "jwt": token,
+                    "User_Authorized": "True",
+                    "User_Id": token["signInNames.citizenId"],
+                    "Information_Name": token.name,
+                    "Information_Email": token["signInNamesInfo.emailAddress"],
                   }
                 };
             dfMessenger.current.setQueryParameters(queryParams);
