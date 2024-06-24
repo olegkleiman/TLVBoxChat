@@ -1,0 +1,86 @@
+<!DOCTYPE html> 
+<html> 
+  
+<head> 
+    <style> 
+        .flip-card {
+            width: 40%;
+            height: 100%;
+            -webkit-transform: translateZ( 0px);
+            transform: translateZ( 0px);
+            -webkit-transition: -webkit-transform .7s, margin .4s;
+            transition: transform .7s, margin .4s;
+            -webkit-transform-style: preserve-3d;
+            transform-style: preserve-3d;
+            position: absolute;
+        }
+
+        .flip-card.flipped {
+            -webkit-transform: rotateY( 180deg);
+            transform: rotateY( 180deg);
+        }
+    
+        .flip-card figure {
+            background-color: #f9f9f9;
+            border: 1px solid black;
+            border-radius: 6px;
+            margin: 0;
+            position: absolute;
+            width: 100%;
+            height: 90%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            -webkit-transform: rotateX(0deg);
+            transform: rotateX(0deg);
+        } 
+
+        .flip-card .login-side {
+            -webkit-transform: rotateX(0deg);
+            transform: rotateX(0deg);
+        }
+        
+        .flip-card .signup-side {
+            -webkit-transform: rotateX(0deg);
+            transform: rotateX(0deg);
+            -webkit-transform: rotateY( 180deg);
+            transform: rotateY( 180deg);
+        }
+
+        figure > div {
+            padding: 30px;
+        }
+
+    </style> 
+</head> 
+  
+<body> 
+    <div id="flipCard" class="flip-card">
+        <figure class="login-side">
+            <div>
+                <p>This is the login-side</p>
+                <p>New user? <a href="#" class="flip-link">Sign up now!</a>
+            </div>
+        </figure>
+        <figure class="signup-side">
+            <div>
+                <p>This is the signup-side</p>
+                <p>Already a user? <a href="#" class="flip-link">Login now!</a>
+              </div>            
+        </figure>
+        
+    </div>
+    <button onclick="rotate()" style="
+            top: 95%;
+            left: 50%;
+            position: absolute;
+        ">Next</button>
+
+    <script>
+        function rotate() {
+            const card = document.getElementById('flipCard');
+            card.classList.toggle("flipped");
+        }
+    </script>
+</body> 
+  
+</html>  

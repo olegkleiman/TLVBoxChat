@@ -41,7 +41,7 @@ const Otp = () => {
             })
             console.log(res.data)
 
-            navigate('/site', {
+            navigate('/chat', {
                 state: {
                     jwt: res.data.access_token
                 }
@@ -59,6 +59,7 @@ const Otp = () => {
                         onChange={handleChange} value={otp}/>
             </FormGroup>
             <Button color="primary" outline
+                type="submit"
                 onClick={onSignIn}/>
         </Form>
     )

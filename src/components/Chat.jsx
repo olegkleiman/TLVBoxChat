@@ -2,12 +2,37 @@ import React, {useRef, useState, useContext, useEffect} from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 
-const Site = ({match}) => {
+const Chat = ({match}) => {
 
     const dfMessenger = useRef(null);
     const {state} = useLocation();
 
     useEffect(() => {
+
+        window.addEventListener('df-request-sent', (event) => {
+            console.log('Request', event.detail.data.requestBody);
+        });
+
+        window.addEventListener('df-response-received', (event) => {
+            // Remove all non-text messages.
+            event.detail.data.messages = event.detail.data.messages.filter(message => {
+                return message.type === 'text';
+            });
+        });          
+
+        // document.addEventListener('df-messenger-loaded', (event) => {
+        //     const queryParams = {
+        //         parameters:{
+        //           "jwt": state.jwt,
+        //           "User_Authorized": "True",
+        //           "User_Id": token["signInNames.citizenId"],
+        //           "Information_Name": token.name,
+        //           "Information_Email": token["signInNamesInfo.emailAddress"],
+        //         }
+        //       };
+        //     dfMessenger.current.setQueryParameters(queryParams);
+        // });
+
         window.addEventListener('df-user-input-entered', (event) => {
             console.log(event.detail.input);
             
@@ -16,11 +41,7 @@ const Site = ({match}) => {
 
             const queryParams = {
                   parameters:{
-                    "jwt": token,
-                    "User_Authorized": "True",
-                    "User_Id": token["signInNames.citizenId"],
-                    "Information_Name": token.name,
-                    "Information_Email": token["signInNamesInfo.emailAddress"],
+                    "jwt": state.jwt,
                   }
                 };
             dfMessenger.current.setQueryParameters(queryParams);
@@ -60,4 +81,4 @@ const Site = ({match}) => {
         )
 }
 
-export default Site;
+export default Chat;

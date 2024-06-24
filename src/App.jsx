@@ -5,8 +5,9 @@ import {
     Routes
 } from "react-router-dom";
 
-import Site from './components/Site';
-import SignIn from './SignIn';
+import Chat from './components/Chat';
+// import SignIn from './SignIn';
+import LogIn from './LogIn';
 import Otp from './Otp';
 
 const App = () => 
@@ -14,9 +15,10 @@ const App = () =>
     return ( 
         <BrowserRouter>
             <Routes>
-                <Route path='/' element={<SignIn />} />
+                <Route path="/" element={<LogIn />} />
+                {/* <Route path='/' element={<SignIn />} /> */}
                 <Route path='/otp' element={<Otp />} />
-                <Route path='/site' element={<Site />} />
+                <Route path='/chat' element={<Chat />} />
             </Routes>
         </BrowserRouter>)
 }

@@ -22,6 +22,51 @@ a:hover {
   display: flex;
 }
 
+.flip-card {
+  width: 40%;
+  height: 100%;
+  -webkit-transform: translateZ( 0px);
+  transform: translateZ( 0px);
+  -webkit-transition: -webkit-transforn .7, margin .4s;
+  transition: transforn .7, margin .4s;
+  -webkit-transform-style: preserve-3d;
+  transition: transform .7s, margin .4s;
+  position: absolute;
+}
+.flip-card figure {
+    width: 100%; 
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-transform: rotateX(0deg);
+    transform: rotateX(0deg);
+    position: absolute;
+}
+
+.flip-card .login-side {
+  -webkit-transform: rotateX(0deg);
+  transform: rotateX(0deg);
+}
+.flip-card .otp-side {
+  -webkit-transform: rotateX(0deg);
+  transform: rotateX(0deg);
+  -webkit-transform: rotateY( 180deg);
+  transform: rotateY( 180deg);
+}
+
+.flip-card.flipped {
+  -webkit-transform: rotateY( 180deg);
+  transform: rotateY( 180deg);
+}
+
+.not-rotated {
+  -webkit-backface-visibility: hidden; 
+  backface-visibility: hidden; 
+}
+
+.flip-card > * {
+  transition: none !important;
+}
+
 .class-col {
   display: flex;
   align-items: center;
