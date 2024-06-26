@@ -4,16 +4,21 @@ import Avatar from '@mui/material/Avatar';
 import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
+import { white, green, blue, red } from '@mui/material/colors';
 
 const LogInLogo = () => {
     return (
-        <Grid item align = "center" justify = "center" alignItems = "center">
-            <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+        <Grid item align = "center" justify = "center" alignItems = "center"
+                sx={{  margin: "auto", width: 200, paddingBottom: 0 }}>
+            <Avatar sx={{ m: 1, bgcolor: blue }}>
                 <LockOutlinedIcon />
             </Avatar>
-            <Typography component="h1" variant="h5" className='not-rotated'>
-                כניסה למערכת
-            </Typography>            
+            {/* <Typography component="p" variant="h4" className='not-rotated'> */}
+            <p>
+                כניסה לTLV Box
+            </p>
+            {/* </Typography> */}
+            
         </Grid>        
     )
 }

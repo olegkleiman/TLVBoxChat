@@ -7,7 +7,7 @@ body {
     -webkit-perspective: 2000px;
     perspective: 2000px;
     width: 320px;
-    height: 300px;
+    height: 400px;
     position: relative;
     margin: 0 auto;
     z-index: 100;
