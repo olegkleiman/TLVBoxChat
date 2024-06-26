@@ -115,7 +115,7 @@ const LogIn = () => {
                 
                         <figure className="login-side">
                             <LogInLogo />
-                            <div style={{ paddingTop: 0}}>
+                            <div style={{ paddingTop: 4}}>
                                 
                                 <div style={{visibility: invoking? "hidden" : "visible" }} >
                                     <p>תעודת זהות</p>
