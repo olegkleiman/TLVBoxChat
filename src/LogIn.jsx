@@ -1,4 +1,5 @@
-import React, {useRef, useState} from 'react';
+import React, {useRef, useEffect, useState} from 'react';
+import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import classNames from "classnames";
 import { CacheProvider } from '@emotion/react';
@@ -16,6 +17,8 @@ import Typography from '@mui/material/Typography';
 import { prefixer } from 'stylis';
 import rtlPlugin from 'stylis-plugin-rtl';
 
+import LogInLogo from './components/LogInLogo'
+
 // Create rtl cache
 const cacheRtl = createCache({
     key: 'muirtl',
@@ -27,37 +30,40 @@ const theme = createTheme({
 
 const LogIn = () => {
 
-    const [isRotated, setIsRotate] = useState(false);
+    const [flipped, setFlipped] = useState(false);
+    const [cardClass, setCardClass] = useState('flip-card');
     
-    const [phoneNumber, setPhoneNumber] = useState([]);
-    const [userId, setUserId] = useState([]);
+    const [userId, setUserId] = useState('313069486');
+    const [phoneNumber, setPhoneNumber] = useState('0543307026');
     const [otpValue, setOtpValue] = useState([]);
+    
     const flipCard = useRef();
 
-    const rotate = () => {
+    const navigate = useNavigate();
 
-        const rotationState = !isRotated;
-        setIsRotate(rotationState);
-
+    useEffect(() => {
         const cardClass = classNames({
             "flip-card": true,
-            "flipped": rotationState 
+            flipped: flipped 
         })
+        setCardClass(cardClass);
+    }, [flipped])
 
-        flipCard.current.className = cardClass;
+    const rotate = () => {
+        setFlipped(!flipped);
     }
 
     const onRequestOtp = async(event) => {
         event.preventDefault()
 
         try {
-
-            // const res = await axios.post("https://api.tel-aviv.gov.il/sso/request_otp", {
-            //     "phoneNumber": "0543307026", // phoneNumber, 
-            //     "userId": "313069486", // userId,
-            //     "clientId": "bf2700ec-4f8c-4731-bd9d-19850577789d",
-            // })
-            // console.log(res.data)            
+            const res = await axios.post("https://api.tel-aviv.gov.il/sso/request_otp", {
+                "phoneNumber": phoneNumber, 
+                "userId": userId,
+                "clientId": "bf2700ec-4f8c-4731-bd9d-19850577789d",
+                 "lang": "he-IL"
+            })
+            console.log(res.data)            
             
             rotate();
         }
@@ -70,16 +76,30 @@ const LogIn = () => {
         event.preventDefault();
 
         try {
-            // const res = await axios.post("https://api.tel-aviv.gov.il/sso/login", {
-            //         "phoneNumber": "0543307026", // phoneNumber, 
-            //         "otp": otpValue,
-            //         "clientId": "bf2700ec-4f8c-4731-bd9d-19850577789d",
-            //         "scope": "openid offline_access https://b2ctam.onmicrosoft.com/chat/all",
-            //         "deviceId": "00155DBCA33D"
-            // })
-            // console.log(res.data) 
+            const res = await axios.post("https://api.tel-aviv.gov.il/sso/login", {
+                    "phoneNumber": phoneNumber, 
+                    "otp": otpValue,
+                    "clientId": "bf2700ec-4f8c-4731-bd9d-19850577789d",
+                    "scope": "openid offline_access https://b2ctam.onmicrosoft.com/chat/all",
+                    "deviceId": "00155DBCA33D"
+            })
+            console.log(res.data) 
 
-            rotate();
+
+            navigate('/chat', {
+                state: {
+                    jwt: res.data.access_token
+                }
+            });
+
+            // navigate('/otp', {
+            //     state: {
+            //         phoneNumber: phoneNumber,
+            //         userId: userId
+            //     }
+            // });            
+
+            //rotate();
         }
         catch(error) {
             console.error(error);
@@ -88,86 +108,54 @@ const LogIn = () => {
         rotate();
     }
 
-    return (<CacheProvider value={cacheRtl}>
-<ThemeProvider theme={theme}>
-        <Container ref={flipCard} className="flip-card">
-            {/* <CssBaseline /> */}
-            <figure className="login-side">
-                <Box>
-                    <Grid item align = "center" justify = "center" alignItems = "center">
-                        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                            <LockOutlinedIcon />
-                        </Avatar>
-                        <Typography component="h1" variant="h5" className='not-rotated'>
-                            כניסה למערכת
-                        </Typography>
-                    </Grid>
-                </Box>                 
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    id="user_id"
-                    value={userId}
-                    label="תעודת זהות"
-                    name="user_id"
-                    autoComplete="user_id"
-                    autoFocus
-                    variant="outlined"
-                    dir="rtl"
-                    onChange={ (event) => setUserId(event.target.value) }
-                    />
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="phone_number"
-                    label="מספר טלפון נייד"
-                    id="phoneNumber"
-                    value={phoneNumber}
-                    dir="rtl"
-                    onChange={ (event) => setPhoneNumber(event.target.value) }
-                />
-                <Box align = "center">
-                    <Button type="submit"
-                            variant="contained"
-                            onClick={onRequestOtp}>
-                            שלח קוד
-                    </Button> 
-                </Box>                 
-            </figure>
-            <figure className="otp-side">
-                <Box>
-                    <Grid item align = "center" justify = "center" alignItems = "center">
-                        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                            <LockOutlinedIcon />
-                        </Avatar>
-                        <Typography component="h1" variant="h5" className='not-rotated'>
-                            כניסה למערכת
-                        </Typography>
-                    </Grid>
-                </Box>   
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="otp_value"
-                    label="קוד"
-                    id="otp_value"
-                    value={otpValue}
-                    onChange={ (event) => setOtpValue(event.target.value) }
-                    dir="rtl" />
-                    <br /><br /><br /><br />
-                <Box align = "center">
-                    <Button type="submit"
-                            variant="contained"
-                            onClick={onLogin}>
-                            שלח קוד
-                    </Button> 
-                </Box>
-            </figure>
-        </Container>
-        </ThemeProvider>
+    return (
+        <CacheProvider value={cacheRtl}>
+            <ThemeProvider theme={theme}>
+                <div className="form-card-container">
+                    <div ref={flipCard} className={`${cardClass}`} id="flipCard">
+                
+                        <figure className="login-side">
+                            <LogInLogo />
+                            <div>
+                                
+                                <p>תעודת זהות</p>
+                                <input value={userId}
+                                        id="user_id"
+                                        onChange={ (event) => setUserId(event.target.value) }/>
+                                
+                                <p>מספר טלפון</p>
+                                <input value={phoneNumber}
+                                        id="phoneNumber"
+                                        onChange={ (event) => setPhoneNumber(event.target.value) }/>
+
+                                <Button type="submit"
+                                        style={{position: "absolute", top: "200px"}}
+                                        variant="contained"
+                                        onClick={onRequestOtp}>
+                                        שלח קוד
+                                </Button>                         
+                            </div>
+                        </figure>
+                        <figure className="signup-side">
+                            <LogInLogo />
+                            <div>
+                                <p>קוד</p>
+                                <input value={otpValue}
+                                        id="otpValue"
+                                        onChange={ (event) => setOtpValue(event.target.value) } />
+
+                                <Button type="submit"
+                                        style={{position: "absolute", top: "200px"}}
+                                        variant="contained"
+                                        onClick={onLogin}>
+                                    כניסה
+                                </Button> 
+                            </div>
+                        </figure>
+                
+                    </div>
+                </div>
+            </ThemeProvider>
         </CacheProvider>
     )
 }

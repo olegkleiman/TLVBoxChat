@@ -1,0 +1,47 @@
+<html dir="rtl">
+    <head>
+        <title>TLV Box</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="Pragma" content="no-cache" />
+        <meta http-equiv="Expires" content="0" />
+        <!-- <link href='tlvbox.css' rel="stylesheet" /> -->
+        <link href='3d.css' rel="stylesheet" />        
+    </head>
+</html>
+<body>
+    <div id="app">
+        <div class="form-card-container">
+            <div class="flip-card" id="flipCard">
+        
+                <figure class="login-side">
+                    <div>
+                        
+                        <p>תעודת זהות</p>
+                        <input />
+                        
+                        <p>מספר טלפון</p>
+                            <input />
+
+                        <button style="position: absolute; top: 200px;" onclick="rotate()" type="button">שלח קוד</button>
+                    </div>
+                </figure>
+                <figure class="signup-side">
+                    <div>
+                        <p>OTP</p>
+                        <input />
+
+                        <button style="position: absolute; top: 200px;" onclick="rotate()" type="button">כניסה</button>
+                    </div>
+                </figure>
+        
+            </div>
+        </div>
+    </div>
+    <script>
+        function rotate() {
+            const card = document.getElementById('flipCard');
+            card.classList.toggle("flipped");
+        }
+    </script>
+</body>  
