@@ -1,0 +1,120 @@
+<!DOCTYPE html> 
+<html>
+    <head>
+        <title>S2T</title>
+        <meta charset="utf-8">
+        <meta http-equiv="Pragma" content="no-cache" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        
+        <div>Tap on the microphone to speak and recognize the spoken text. HEBREW ONLY!</div>
+        <button id="record" style="padding: 0;border:none;background: none;">
+            <img alt="Start" id="mic_img" style="border:none;" src="https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif" />
+        </button>
+        <div id='transcript'></div>
+
+        <script>
+            const transcriptElement = document.getElementById('transcript');
+            const micImage = document.getElementById('mic_img');
+
+            const projectId = 'muni-tlv';
+            const apiKey = 'AIzaSyA_rpSTA3xIzFcAK-9OSdF03Z9AK_0kogs';
+
+            const startRecording = () => {
+                micImage.alt = "Stop";
+                micImage.src = "https://www.google.com/intl/en/chrome/assets/common/images/content/mic-animate.gif";
+            
+                recognition.start();
+            }
+            const stopRecording = () => {
+                micImage.alt = "Start";
+                micImage.src = "https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif";
+
+                recognition.stop();
+            }
+
+            const recognition = new webkitSpeechRecognition();
+            recognition.lang = 'he-IL';
+            recognition.continuous = false; // when the user stops talking, speech recognition will end.
+            recognition.interimResults = false; // only results returned by the recognizer are final and will not change. 
+            recognition.onspeechend = () => {
+              recognition.stop();
+            };      
+            recognition.onnomatch = (event) => {
+                transcriptElement.innerText = "I didn't recognize your speech.";
+            }; 
+            recognition.onerror = (event) => {
+                console.error(`Error occurred while transcribing audio: ${event.error}`);
+            }                    
+
+            // When the record button is clicked, start recording audio
+            document.getElementById('record').addEventListener('click', () => {
+                
+                if( micImage.alt == "Start" ) 
+                    startRecording();
+                else
+                    stopRecording();
+
+            });
+            
+            // When the recognition service returns a result, send it to the Google Speech-to-text API
+            recognition.onresult = (event) => {
+
+                stopRecording();
+
+                const speechToTextApiUrl = `https://speech.googleapis.com/v1p1beta1/speech:recognize?key=${apiKey}`;
+                const transcript = event.results[0][0].transcript;
+
+                transcriptElement.innerText = transcript;
+
+                let utterance = new SpeechSynthesisUtterance(transcript);
+                window.speechSynthesis.onvoiceschanged = () => {
+                    var voices = window.speechSynthesis.getVoices();
+                    utterance.voice = voices[0];
+                    utterance.pitch = 1
+                    utterance.rate = 1
+                    speechSynthesis.speak(utterance)
+                };
+                utterance.onend = function (event) {
+                    console.log("SpeechSynthesisUtterance.onend");
+                };
+                utterance.onerror = function (event) {
+                    console.error("SpeechSynthesisUtterance.onerror");
+                };                
+                //speechSynthesis.speak(utterance)
+
+                const request = {
+                    config: {
+                        encoding: 'LINEAR16',
+                        sampleRateHertz: 16000,
+                        languageCode: 'he-IL', // 'en-US',
+                        enableWordTimeOffsets: false,
+                    },
+                    // audio: {
+                    //     content: audioData,
+                    // },                
+                };
+
+                // fetch(speechToTextApiUrl, {
+                //     method: 'POST',
+                //     body: JSON.stringify(request),
+                //     headers: {
+                //         'Content-Type': 'application/json',
+                //     },
+                // })
+                // .then((response) => response.json())
+                // .then((data) => {
+                //     if (data.results && data.results.length > 0 && data.results[0].alternatives.length > 0) {
+                //         const transcript = data.results[0].alternatives[0].transcript;
+                //         transcriptElement.innerText = transcript;
+                //     }                
+                // })
+                // .catch((error) => console.error(error));   
+            
+
+            };            
+   
+        </script>
+    </body>
+</html>

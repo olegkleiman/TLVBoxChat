@@ -13,21 +13,25 @@ const Chat = ({match}) => {
             console.log('Request', event.detail.data.requestBody);
         });
 
-        window.addEventListener('df-response-received', (event) => {
-            // Remove all non-text messages.
-            event.detail.data.messages = event.detail.data.messages.filter(message => {
-                return message.type === 'text';
-            });
-        });          
+        window.addEventListener('picked_up', (event) => {
+            console.log('PickedUp event', event.parameters)
+        })
+
+        // window.addEventListener('df-response-received', (event) => {
+        //     // Remove all non-text messages.
+        //     // event.detail.data.messages = event.detail.data.messages.filter(message => {
+        //     //     return message.type === 'text';
+        //     // });
+        // });          
 
         // document.addEventListener('df-messenger-loaded', (event) => {
         //     const queryParams = {
         //         parameters:{
         //           "jwt": state.jwt,
         //           "User_Authorized": "True",
-        //           "User_Id": token["signInNames.citizenId"],
-        //           "Information_Name": token.name,
-        //           "Information_Email": token["signInNamesInfo.emailAddress"],
+        //           "userId": token["signInNames.citizenId"],
+        //           "userName": token.name,
+        //           "userEmail": token["signInNamesInfo.emailAddress"],
         //         }
         //       };
         //     dfMessenger.current.setQueryParameters(queryParams);
@@ -50,9 +54,8 @@ const Chat = ({match}) => {
 
     return (
         <df-messenger
-                    location="europe-west3"
                     project-id="muni-tlv"
-                    agent-id="62c2701d-60d9-427d-a04f-4a00f15e5632"
+                    agent-id="4b8e1e60-e020-4d7f-98d0-2f47dbf7bd78"
                     language-code="he-il"
                     max-query-length="-1"
                     ref={dfMessenger}>
@@ -60,7 +63,7 @@ const Chat = ({match}) => {
                             chat-title="TLV Box"
                             chat-subtitle="Personal Assistant"
                             allow-fullscreen="always"
-                            placeholder-text="כתוב השאלה באן...">
+                            placeholder-text="כתוב השאלה כאן...">
                         </df-messenger-chat-bubble>
                 </df-messenger>
         

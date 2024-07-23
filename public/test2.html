@@ -1,47 +1,55 @@
-<html dir="rtl">
-    <head>
-        <title>TLV Box</title>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta http-equiv="Pragma" content="no-cache" />
-        <meta http-equiv="Expires" content="0" />
-        <!-- <link href='tlvbox.css' rel="stylesheet" /> -->
-        <link href='3d.css' rel="stylesheet" />        
-    </head>
-</html>
-<body>
-    <div id="app">
-        <div class="form-card-container">
-            <div class="flip-card" id="flipCard">
-        
-                <figure class="login-side">
-                    <div>
-                        
-                        <p>תעודת זהות</p>
-                        <input />
-                        
-                        <p>מספר טלפון</p>
-                            <input />
-
-                        <button style="position: absolute; top: 200px;" onclick="rotate()" type="button">שלח קוד</button>
-                    </div>
-                </figure>
-                <figure class="signup-side">
-                    <div>
-                        <p>OTP</p>
-                        <input />
-
-                        <button style="position: absolute; top: 200px;" onclick="rotate()" type="button">כניסה</button>
-                    </div>
-                </figure>
-        
-            </div>
-        </div>
-    </div>
-    <script>
-        function rotate() {
-            const card = document.getElementById('flipCard');
-            card.classList.toggle("flipped");
+<!DOCTYPE html> 
+<html> 
+  
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        df-messenger {
+          z-index: 999;
+          position: fixed;
+          --df-messenger-font-color: #000;
+          --df-messenger-font-family: Google Sans;
+          --df-messenger-chat-background: #f3f6fc;
+          --df-messenger-message-user-background: #d3e3fd;
+          --df-messenger-message-bot-background: #fff;
+          bottom: 16px;
+          right: 16px;
         }
+      </style>
+</head> 
+  
+<body> 
+    <link rel="stylesheet" href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css">
+    <df-messenger
+        project-id="muni-tlv"
+        agent-id="bed9e0d0-c9a0-4718-8ae3-427b36285f81"
+        language-code="en"
+        max-query-length="-1">
+            <df-messenger-chat-bubble
+                chat-title="">
+            </df-messenger-chat-bubble>
+    </df-messenger>
+
+    <script>
+        const dfMessenger = document.querySelector('df-messenger');
+        
+        dfMessenger.addEventListener('df-response-received', (event) => {
+            // Remove all non-text messages.
+            event.detail.data.messages = event.detail.data.messages.filter(message => {
+                return message.type === 'text';
+            });
+        });
+
+        dfMessenger.addEventListener('df-request-sent', (event) => {
+            console.log(event.detail.requestBody);
+        });
+
+        dfMessenger.addEventListener('df-user-input-entered', (event) => {
+            console.log(event.detail.input);
+        })
     </script>
-</body>  
+    <!-- <script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/@luxrobo/df-messenger@1.1.4/dist/index.min.js"></script>    
+</body> 
+  
+</html>  
