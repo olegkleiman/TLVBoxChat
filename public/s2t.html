@@ -17,6 +17,7 @@
         <script>
             const transcriptElement = document.getElementById('transcript');
             const micImage = document.getElementById('mic_img');
+            var currentVoice;
 
             const projectId = 'muni-tlv';
             const apiKey = 'AIzaSyA_rpSTA3xIzFcAK-9OSdF03Z9AK_0kogs';
@@ -63,7 +64,7 @@
 
                 stopRecording();
 
-                const speechToTextApiUrl = `https://speech.googleapis.com/v1p1beta1/speech:recognize?key=${apiKey}`;
+                //const speechToTextApiUrl = `https://speech.googleapis.com/v1p1beta1/speech:recognize?key=${apiKey}`;
                 const transcript = event.results[0][0].transcript;
 
                 transcriptElement.innerText = transcript;
@@ -71,9 +72,10 @@
                 let utterance = new SpeechSynthesisUtterance(transcript);
                 window.speechSynthesis.onvoiceschanged = () => {
                     var voices = window.speechSynthesis.getVoices();
+                    currentVoice = voices[0];
                     utterance.voice = voices[0];
                     utterance.pitch = 1
-                    utterance.rate = 1
+                    utterance.rate = 0.5
                     speechSynthesis.speak(utterance)
                 };
                 utterance.onend = function (event) {
@@ -81,20 +83,21 @@
                 };
                 utterance.onerror = function (event) {
                     console.error("SpeechSynthesisUtterance.onerror");
-                };                
-                //speechSynthesis.speak(utterance)
-
-                const request = {
-                    config: {
-                        encoding: 'LINEAR16',
-                        sampleRateHertz: 16000,
-                        languageCode: 'he-IL', // 'en-US',
-                        enableWordTimeOffsets: false,
-                    },
-                    // audio: {
-                    //     content: audioData,
-                    // },                
                 };
+                utterance.voice = currentVoice;                
+                speechSynthesis.speak(utterance)
+
+                // const request = {
+                //     config: {
+                //         encoding: 'LINEAR16',
+                //         sampleRateHertz: 16000,
+                //         languageCode: 'he-IL', // 'en-US',
+                //         enableWordTimeOffsets: false,
+                //     },
+                //     // audio: {
+                //     //     content: audioData,
+                //     // },                
+                // };
 
                 // fetch(speechToTextApiUrl, {
                 //     method: 'POST',
