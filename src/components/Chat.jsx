@@ -9,6 +9,10 @@ const Chat = ({match}) => {
 
     useEffect(() => {
 
+        window.addEventListener('df-messenger-loaded', () => {
+            console.log('DF Messenger loaded');
+        });
+
         window.addEventListener('df-request-sent', (event) => {
             console.log('Request', event.detail.data.requestBody);
         });
@@ -54,10 +58,12 @@ const Chat = ({match}) => {
 
     return (
         <df-messenger
+                    location="europe-west3"
                     project-id="muni-tlv"
-                    agent-id="4b8e1e60-e020-4d7f-98d0-2f47dbf7bd78"
+                    agent-id="62c2701d-60d9-427d-a04f-4a00f15e5632"
                     language-code="he-il"
                     max-query-length="-1"
+                    storage-option="none"
                     ref={dfMessenger}>
                         <df-messenger-chat-bubble
                             chat-title="TLV Box"
@@ -66,21 +72,7 @@ const Chat = ({match}) => {
                             placeholder-text="כתוב השאלה כאן...">
                         </df-messenger-chat-bubble>
                 </df-messenger>
-        
-        //     <div dangerouslySetInnerHTML={{ __html: `<df-messenger
-        //             location="europe-west3"
-        //             project-id="muni-tlv"
-        //             agent-id="62c2701d-60d9-427d-a04f-4a00f15e5632"
-        //             language-code="he-il"
-        //             max-query-length="-1">
-        //                 <df-messenger-chat-bubble
-        //                     chat-title="TLV Box"
-        //                     chat-subtitle="Personal Assistant"
-        //                     allow-fullscreen="always"
-        //                     placeholder-text="כתוב השאלה באן...">
-        //                 </df-messenger-chat-bubble>
-        //         </df-messenger>)
-        // ` }} />
+
         )
 }
 

@@ -10,34 +10,64 @@
           --df-messenger-button-titlebar-color: #df9b56;
           --df-messenger-font-color: #000;
           --df-messenger-font-family: Google Sans;
+          --df-messenger-font-size: 14px;
           --df-messenger-chat-background: #f3f6fc;
           --df-messenger-message-user-background: #d3e3fd;
-          --df-messenger-message-bot-background: #fff;
+          --df-messenger-message-bot-background: #ecf3fe; 
+          --df-messenger-input-background: white;
+          /* #fff; */
           bottom: 16px;
           right: 16px;
+          
         }
     </style>
     <link rel="stylesheet" href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css">    
-    <script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"></script>
+    <!-- <script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"></script> -->
+    <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
 </head> 
   
 <body> 
     <df-messenger
+        location="europe-west3"
         project-id="muni-tlv"
-        agent-id="4b8e1e60-e020-4d7f-98d0-2f47dbf7bd78"
+        agent-id="62c2701d-60d9-427d-a04f-4a00f15e5632"
         language-code="he-il"
+        storage-option="none"
         max-query-length="-1">
             <df-messenger-chat-bubble
+                expanded="true"
                 chat-title="TLV Box"
                 chat-subtitle="Personal Assistant"
-                allow-fullscreen="always"
-                placeholder-text="כתוב השאלה באן...">
+                allow-fullscreen="always">
             </df-messenger-chat-bubble>
     </df-messenger>
     <script>
         const dfMessenger = document.querySelector('df-messenger');
-        dfMessenger.renderCustomText('Custom text');
+        //dfMessenger.renderCustomText('Welcome! This text comes from the client-script.');
+        
+        // const _shadowRoot = document.querySelector('df-messenger-user-input');
+        // var shadowRoot = _shadowRoot.shadowRoot;
+        // const sendButton = hadowRoot.getElementById('send-icon-button');
+        // {
+        //     _dfMessenger.addEventListener( 'df-messenger-loaded', function( event ) {
+        //         console.log('Messenger is now ready.');
+        //     });
+        // }
+        window.addEventListener('df-messenger-loaded', function() {
 
+            console.log('Messenger is now ready.');
+
+            const sendButton = document.shadowRoot.getElementById('send-icon-button');
+        });
+
+        window.addEventListener('df-session-id-set', function(event) {
+            console.log('Session set');
+        });
+
+        dfMessenger.addEventListener('df-chat-open-changed', function(event) {
+            console.log(`Chat is ${event.detail.isOpen ? 'open' : 'closed'}`);
+            const sendButton = document.getElementById('send-icon-button');
+        });
         window.addEventListener('df-messenger-error', function (event) {
             console.log(event.detail.error)
         });
@@ -53,6 +83,11 @@
         window.addEventListener('df-user-input-entered', (event) => {
             console.log(event)
         })
+
+        setTimeout(() => {
+            var buttons = document.getElementsByTagName('button');
+        }, 1000);
+        
     </script>
 </body> 
   

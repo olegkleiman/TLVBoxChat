@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html dir="rtl">
+    <head>
+        <style>
+            /* Define --main-bg-color here */
+            :root {
+                --main-bg-color: red;
+            }            
+            .one {
+                background-color: var(--main-bg-color);
+            }
+            .two {
+                color: black;
+                background-color: aquamarine;
+            }
+            .three {
+                background-color: cornflowerblue;
+            }
+            .four {
+                background-color: cornflowerblue;
+            }
+            .five {
+                background-color: cornflowerblue;
+            }
+        </style>
+    </head>
+    <div class="container">
+        <div class="one">
+          <p>One</p>
+        </div>
+        <div class="two">
+          <p>Two</p>
+          <div class="three">
+            <p>Three</p>
+          </div>
+        </div>
+        <input class="four" placeholder="Four" />
+        <textarea class="five">Five</textarea>
+      </div>
+</html>
