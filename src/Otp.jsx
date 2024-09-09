@@ -27,7 +27,7 @@ const Otp = () => {
         event.preventDefault()
 
         try {
-            const res = await axios.post("https://api.tel-aviv.gov.il/sso/login", {
+            const res = await axios.post("https://apimtlvppr.tel-aviv.gov.il/sso/login", {
                 "phoneNumber": state.phoneNumber, 
                 "otp": otp,
                 "clientId": "bf2700ec-4f8c-4731-bd9d-19850577789d",

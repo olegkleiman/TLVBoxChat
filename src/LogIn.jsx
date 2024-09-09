@@ -65,10 +65,10 @@ const LogIn = () => {
         setInvoking(true);
 
         try {
-            const res = await axios.post("https://api.tel-aviv.gov.il/sso/request_otp", {
+            const res = await axios.post("https://apimtlvppr.tel-aviv.gov.il/sso/request_otp", {
                 "phoneNumber": phoneNumber, 
                 "userId": userId,
-                "clientId": "bf2700ec-4f8c-4731-bd9d-19850577789d",
+                "clientId": "993f503d-8081-4a84-b5b5-30b3e7f3c641",
                  "lang": "he-IL"
             })
             console.log(res.data)            
@@ -85,11 +85,11 @@ const LogIn = () => {
         event.preventDefault();
 
         try {
-            const res = await axios.post("https://api.tel-aviv.gov.il/sso/login", {
+            const res = await axios.post("https://apimtlvppr.tel-aviv.gov.il/sso/login", {
                     "phoneNumber": phoneNumber, 
                     "otp": otpValue,
-                    "clientId": "bf2700ec-4f8c-4731-bd9d-19850577789d",
-                    "scope": "openid offline_access https://b2ctam.onmicrosoft.com/chat/all",
+                    "clientId": "993f503d-8081-4a84-b5b5-30b3e7f3c641",
+                    "scope": "openid offline_access https://TlvfpB2CPPR.onmicrosoft.com/chat/access_all",
                     "deviceId": "00155DBCA33D"
             })
             console.log(res.data) 

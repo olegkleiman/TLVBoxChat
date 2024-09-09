@@ -58,9 +58,8 @@ const Chat = ({match}) => {
 
     return (
         <df-messenger
-                    location="europe-west3"
                     project-id="muni-tlv"
-                    agent-id="62c2701d-60d9-427d-a04f-4a00f15e5632"
+                    agent-id="46727f85-4983-4edb-b8b1-55df166837da"
                     language-code="he-il"
                     max-query-length="-1"
                     storage-option="none"
@@ -69,7 +68,7 @@ const Chat = ({match}) => {
                             chat-title="TLV Box"
                             chat-subtitle="Personal Assistant"
                             allow-fullscreen="always"
-                            placeholder-text="כתוב השאלה כאן...">
+                            placeholder-text="כתוב כאן...">
                         </df-messenger-chat-bubble>
                 </df-messenger>
 
