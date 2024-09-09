@@ -1,4 +1,4 @@
-import React, {useRef, useState, useContext, useEffect} from 'react';
+import React, {useRef, useLayoutEffect, useState, useContext, useEffect} from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 
@@ -7,11 +7,35 @@ const Chat = ({match}) => {
     const dfMessenger = useRef(null);
     const {state} = useLocation();
 
-    useEffect(() => {
+    useLayoutEffect( () => {
 
         window.addEventListener('df-messenger-loaded', () => {
-            console.log('DF Messenger loaded');
+
+            console.log('DF Messenger loaded'); 
+
+            const token = jwtDecode(state.jwt);
+
+            const queryParams = {
+                parameters:{
+                  "jwt": state.jwt,
+                  "User_Authorized": "True",
+                  "userId": token["signInNames.citizenId"],
+                  "userName": token.name,
+                  "userEmail": token["signInNamesInfo.emailAddress"],
+                }
+              };
+            dfMessenger.current.setQueryParameters(queryParams);
         });
+        
+    })
+
+    useEffect(() => {
+
+        dfMessenger.current.renderCustomText('שלום')
+
+        // window.addEventListener('df-messenger-loaded', () => {
+        //     console.log('DF Messenger loaded');
+        // });
 
         window.addEventListener('df-request-sent', (event) => {
             console.log('Request', event.detail.data.requestBody);
@@ -28,33 +52,20 @@ const Chat = ({match}) => {
         //     // });
         // });          
 
-        // document.addEventListener('df-messenger-loaded', (event) => {
-        //     const queryParams = {
-        //         parameters:{
-        //           "jwt": state.jwt,
-        //           "User_Authorized": "True",
-        //           "userId": token["signInNames.citizenId"],
-        //           "userName": token.name,
-        //           "userEmail": token["signInNamesInfo.emailAddress"],
-        //         }
-        //       };
-        //     dfMessenger.current.setQueryParameters(queryParams);
-        // });
-
-        window.addEventListener('df-user-input-entered', (event) => {
-            console.log(event.detail.input);
+        // window.addEventListener('df-user-input-entered', (event) => {
+        //     console.log(event.detail.input);
             
-            const token = jwtDecode(state.jwt);
-            console.log(token);
+        //     const token = jwtDecode(state.jwt);
+        //     console.log(token);
 
-            const queryParams = {
-                  parameters:{
-                    "userId": token["signInNames.citizenId"],
-                    "jwt": state.jwt,
-                  }
-                };
-            dfMessenger.current.setQueryParameters(queryParams);
-          });
+        //     const queryParams = {
+        //           parameters:{
+        //             "userId": token["signInNames.citizenId"],
+        //             "jwt": state.jwt,
+        //           }
+        //         };
+        //     dfMessenger.current.setQueryParameters(queryParams);
+        //   });
     })
 
     return (
@@ -64,10 +75,12 @@ const Chat = ({match}) => {
                     language-code="he-il"
                     max-query-length="-1"
                     storage-option="none"
+                    chat-icon="./assets/img/HAL9001Logo.png"
                     ref={dfMessenger}>
                         <df-messenger-chat-bubble
                             chat-title="TLV Box"
                             chat-subtitle="Personal Assistant"
+                            
                             allow-fullscreen="always"
                             placeholder-text="כתוב כאן...">
                         </df-messenger-chat-bubble>
