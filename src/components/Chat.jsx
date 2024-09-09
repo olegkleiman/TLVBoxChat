@@ -49,6 +49,7 @@ const Chat = ({match}) => {
 
             const queryParams = {
                   parameters:{
+                    "userId": token["signInNames.citizenId"],
                     "jwt": state.jwt,
                   }
                 };
