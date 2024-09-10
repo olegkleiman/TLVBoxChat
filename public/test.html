@@ -3,11 +3,13 @@
   
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8" />
     <style>
         df-messenger {
           z-index: 999;
           position: fixed;
-          --df-messenger-button-titlebar-color: #df9b56;
+          /* --df-messenger-button-titlebar-color: #df9b56; */
+          --df-messenger-button-titlebar-color: #0a2f79;
           --df-messenger-font-color: #000;
           --df-messenger-font-family: Google Sans;
           --df-messenger-font-size: 14px;
@@ -28,11 +30,12 @@
   
 <body> 
     <df-messenger
-        location="europe-west3"
         project-id="muni-tlv"
-        agent-id="62c2701d-60d9-427d-a04f-4a00f15e5632"
+        agent-id="46727f85-4983-4edb-b8b1-55df166837da"
         language-code="he-il"
         storage-option="none"
+        chat-icon="./assets/img/HAL9001Logo.png"
+        chat-title-icon="./assets/img/HAL9001Logo.png"
         max-query-length="-1">
             <df-messenger-chat-bubble
                 expanded="true"
@@ -57,7 +60,24 @@
 
             console.log('Messenger is now ready.');
 
-            const sendButton = document.shadowRoot.getElementById('send-icon-button');
+            //const sendButton = document.shadowRoot.getElementById('send-icon-button');
+
+            const payload = [
+                {
+                    "type": "info",
+                    "title": "Info item title",
+                    "subtitle": "Info item subtitle",
+                    "image": {
+                    "rawUrl": "https://example.com/images/logo.png"
+                    },
+                    "anchor": {
+                    "href": "https://example.com",
+                    "target": "_blank"
+                    }
+                }
+            ];
+            dfMessenger.renderCustomCard(payload);
+            dfMessenger.setQueryParameters('{"timeZone": "America/New_York"}')
         });
 
         window.addEventListener('df-session-id-set', function(event) {

@@ -70,23 +70,25 @@ const Chat = ({match}) => {
 
     return (
         <df-messenger
-                    project-id="muni-tlv"
-                    agent-id="46727f85-4983-4edb-b8b1-55df166837da"
-                    language-code="he-il"
-                    max-query-length="-1"
-                    storage-option="none"
-                    chat-icon="./assets/img/HAL9001Logo.png"
-                    ref={dfMessenger}>
-                        <df-messenger-chat-bubble
-                            chat-title="TLV Box"
-                            chat-subtitle="Personal Assistant"
-                            
-                            allow-fullscreen="always"
-                            placeholder-text="כתוב כאן...">
-                        </df-messenger-chat-bubble>
-                </df-messenger>
+            project-id="muni-tlv"
+            agent-id="46727f85-4983-4edb-b8b1-55df166837da"
+            intent="Default Welcome Intent"
+            language-code="he-il"
+            max-query-length="-1"
+            storage-option="none"
+            chat-icon="https://img.freepik.com/premium-vector/chat-logo-with-robot-face_1124-277.jpg"
+            chat-title-icon="https://img.freepik.com/premium-vector/chat-logo-with-robot-face_1124-277.jpg"
+            allow-feedback="all"
+            ref={dfMessenger}>
+            <df-messenger-chat-bubble
+                expanded="true"
+                chat-title="TLV Box"
+                chat-subtitle="Personal Assistant"
+                allow-fullscreen="always">
+            </df-messenger-chat-bubble>
+        </df-messenger>
 
-        )
+    )
 }
 
 export default Chat;
