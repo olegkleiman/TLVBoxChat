@@ -75,10 +75,13 @@
         }
 
         if ("geolocation" in navigator) {
+            alert('geolocation ia availabe')
             const watchID = navigator.geolocation.watchPosition((position) => {
                 const location = `${position.coords.latitude}, ${position.coords.longitude}`
                 console.log(location);
                 alert(location);
+            }, () => {
+                alert('No posotion available')
             })
         }
 
