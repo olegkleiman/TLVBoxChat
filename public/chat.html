@@ -76,7 +76,7 @@
 
         if ("geolocation" in navigator) {
             const watchID = navigator.geolocation.watchPosition((position) => {
-                const location = `{position.coords.latitude}, {position.coords.longitude}`
+                const location = `${position.coords.latitude}, ${position.coords.longitude}`
                 console.log(location);
                 alert(location);
             })
