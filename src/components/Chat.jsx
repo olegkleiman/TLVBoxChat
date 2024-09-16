@@ -72,7 +72,6 @@ const Chat = ({match}) => {
         <df-messenger
             project-id="muni-tlv"
             agent-id="46727f85-4983-4edb-b8b1-55df166837da"
-            intent="Default Welcome Intent"
             language-code="he-il"
             max-query-length="-1"
             storage-option="none"

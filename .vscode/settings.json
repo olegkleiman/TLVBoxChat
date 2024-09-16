@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/5fde5d29-6b56-469d-8489-ebba5c17c2dd/resourceGroups/RGTlvBoxDev/providers/Microsoft.Web/sites/TlvBoxChat",
+    "appService.deploySubpath": "public"
+}

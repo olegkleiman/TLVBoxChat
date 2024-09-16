@@ -1,0 +1,161 @@
+<!DOCTYPE html> 
+<html> 
+  
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta charset="UTF-8" />
+    <style>
+        df-messenger {
+          z-index: 999;
+          position: fixed;
+          /* --df-messenger-button-titlebar-color: #df9b56; */
+          --df-messenger-button-titlebar-color: #0a2f79;
+          --df-messenger-font-color: #000;
+          --df-messenger-font-family: Google Sans;
+          --df-messenger-font-size: 14px;
+          --df-messenger-chat-background: #f3f6fc;
+          --df-messenger-message-user-background: #d3e3fd;
+          --df-messenger-message-bot-background: #ecf3fe; 
+          --df-messenger-input-background: white;
+          /* #fff; */
+          bottom: 16px;
+          right: 16px;
+          
+        }
+    </style>
+    <link rel="stylesheet" href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css">    
+    <script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"></script>
+    <!-- <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script> -->
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"> 
+    <script src="https://unpkg.com/jwt-decode@2.0.4/build/jwt-decode.min.js"></script>  
+</head> 
+  
+<body> 
+    <div hidden id="jwt">ey..</div>
+    <button class="mdc-button mdc-button--raised"
+            onClick="expire()">
+        <span class="mdc-button__ripple"></span>
+        <span class="mdc-button__touch"></span>
+        <span class="mdc-button__label">Force Access Token Expiration</span>
+    </button>
+    <df-messenger
+        project-id="muni-tlv"
+        agent-id="46727f85-4983-4edb-b8b1-55df166837da"
+        language-code="he-il"
+        max-query-length="-1"
+        storage-option="none"
+        chat-icon="https://img.freepik.com/premium-vector/chat-logo-with-robot-face_1124-277.jpg"
+        chat-title-icon="https://img.freepik.com/premium-vector/chat-logo-with-robot-face_1124-277.jpg"
+        allow-feedback="all">
+        <df-messenger-chat-bubble
+            expanded="true"
+            chat-title="TLV Box"
+            chat-subtitle="עוזרת אישית"
+            allow-fullscreen="always">
+        </df-messenger-chat-bubble>
+    </df-messenger>
+    <script>
+
+        const accessTokenDiv = document.getElementById('jwt');
+        const dfMessenger = document.querySelector('df-messenger');
+
+        function receiveAccessToken(accessToken) {
+            var token = jwt_decode(accessToken);
+            dfMessenger.renderCustomText('שלום' + token.name)
+            accessTokenDiv.innerText = accessToken;
+        }
+
+        function expire() {
+
+                webViewInterface = window.Android
+                webViewInterface.refreshAccessToken();
+
+        }
+
+        if ("geolocation" in navigator) {
+            const watchID = navigator.geolocation.watchPosition((position) => {
+                const location = `{position.coords.latitude}, {position.coords.longitude}`
+                console.log(location);
+                alert(location);
+            })
+        }
+
+        //dfMessenger.renderCustomText('שלום')
+
+        window.addEventListener('df-messenger-loaded', function() {
+
+            console.log('Messenger is now ready.');
+
+            //const sendButton = document.shadowRoot.getElementById('send-icon-button');
+
+            const payload = [
+                {
+                    "type": "info",
+                    "title": "Info item title",
+                    "subtitle": "Info item subtitle",
+                    "image": {
+                    "rawUrl": "https://example.com/images/logo.png"
+                    },
+                    "anchor": {
+                    "href": "https://example.com",
+                    "target": "_blank"
+                    }
+                }
+            ];
+            dfMessenger.renderCustomCard(payload);
+
+            const queryParams = {
+                parameters:{
+                  "jwt": accessTokenDiv.innerText,
+                  "User_Authorized": "True",
+                  "userId": '313069486',
+                  }
+              };
+
+            //dfMessenger.setQueryParameters(queryParams)
+        });
+
+        window.addEventListener('df-session-id-set', function(event) {
+            console.log('Session set');
+        });
+
+        dfMessenger.addEventListener('df-chat-open-changed', function(event) {
+            console.log(`Chat is ${event.detail.isOpen ? 'open' : 'closed'}`);
+            const sendButton = document.getElementById('send-icon-button');
+        });
+        window.addEventListener('df-messenger-error', function (event) {
+            console.log(event.detail.error)
+        });
+        window.addEventListener('df-request-sent', (event) => {
+            console.log('Request', event.detail.data.requestBody);
+        });
+        window.addEventListener('df-response-received', (event) => {
+            console.log(event.detail)
+        })
+        window.addEventListener('df-chip-clicked', (event) => {
+            console.log(event)
+        })
+        window.addEventListener('df-user-input-entered', (event) => {
+            console.log(event)
+
+            const jwt = accessTokenDiv.innerText;
+            var token = jwt_decode(jwt);
+
+            const queryParams = {
+                parameters:{
+                  "jwt": jwt,
+                  "userEmail": token["signInNamesInfo.emailAddress"],
+                  "userName": token.name,
+                  "userId": token["signInNames.citizenId"]
+                  }
+              };
+
+            dfMessenger.setQueryParameters(queryParams)            
+        })
+        
+    </script>
+</body> 
+  
+</html>  
