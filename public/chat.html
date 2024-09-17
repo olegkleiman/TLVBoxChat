@@ -42,6 +42,14 @@
         <span class="mdc-button__label">Force Access Token Expiration</span>
     </button>
     <div id="expirationTime"></div>
+    <button class="mdc-button mdc-button--raised"
+            onClick="openCamera()">
+        <span class="mdc-button__ripple"></span>
+        <span class="mdc-button__label">Open Camera</span>
+    </button>
+    <div>
+        <video id="vid"></video>
+    </div>
     <df-messenger
         project-id="muni-tlv"
         agent-id="46727f85-4983-4edb-b8b1-55df166837da"
@@ -77,6 +85,61 @@
 
                 webViewInterface = window.Android
                 webViewInterface.refreshAccessToken();
+
+        }
+
+        function openCamera() {
+            
+
+            const mediaDevices = navigator.mediaDevices;
+            if (!mediaDevices || !mediaDevices.getUserMedia) {
+                alert("getUserMedia() not supported.");
+                return;
+            }
+
+            mediaDevices.getUserMedia({video: true, 
+                                        audio: false})
+                        .then( (stream) => {
+                            let video = document.getElementById("vid");
+                            if ("srcObject" in video) {
+                                video.srcObject = stream;
+                            } else {
+                                video.src = window.URL.createObjectURL(stream);
+                            }
+                            
+                            video.addEventListener("loadedmetadata", () => {
+                                video.play();
+                            });
+                        })
+                        .catch(alert);
+
+//                         Accessing the phone's front and rear cameras
+
+// const constraints = {
+//   video: {
+//     width: { ... },
+//     height: { ... },
+//     facingMode: "environment"
+//   },
+// };
+
+// videoStream.getTracks().forEach((track) => {
+//   track.stop()
+// })                        
+            
+// Taking screenshots
+
+// // considering there is a
+// // <canvas id="canvas"></canvas>
+// // tag in the page
+// const canvas = document.querySelector('#canvas')
+// canvas.width = video.videoWidth
+// canvas.height = video.videoHeight
+// canvas.getContext('2d').drawImage(video, 0, 0)
+
+// const img = document.createElement('img')
+// img.src = canvas.toDataURL('image/png')
+// screenshotsContainer.prepend(img)
 
         }
 
