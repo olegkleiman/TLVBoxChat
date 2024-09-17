@@ -34,12 +34,14 @@
   
 <body> 
     <div hidden id="jwt">ey..</div>
+    <div id="location">xx.yy</div>
     <button class="mdc-button mdc-button--raised"
             onClick="expire()">
         <span class="mdc-button__ripple"></span>
         <span class="mdc-button__touch"></span>
         <span class="mdc-button__label">Force Access Token Expiration</span>
     </button>
+    <div id="expirationTime"></div>
     <df-messenger
         project-id="muni-tlv"
         agent-id="46727f85-4983-4edb-b8b1-55df166837da"
@@ -65,6 +67,10 @@
             var token = jwt_decode(accessToken);
             dfMessenger.renderCustomText('שלום' + token.name)
             accessTokenDiv.innerText = accessToken;
+
+            const expirationDiv = document.getElementById("expirationTime");
+            var d = new Date(token.exp * 1000);
+            expirationDiv.innerText = d
         }
 
         function expire() {
@@ -79,9 +85,10 @@
             const watchID = navigator.geolocation.watchPosition((position) => {
                 const location = `${position.coords.latitude}, ${position.coords.longitude}`
                 console.log(location);
-                alert(location);
+                const locationDiv = document.getElementById("location");
+                locationDiv.innerText = location;
             }, () => {
-                alert('No posotion available')
+                alert('No geolocation available')
             })
         }
 
