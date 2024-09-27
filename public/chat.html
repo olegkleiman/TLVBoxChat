@@ -17,7 +17,7 @@
           --df-messenger-message-user-background: #d3e3fd;
           --df-messenger-message-bot-background: #ecf3fe; 
           --df-messenger-input-background: white;
-          /* #fff; */
+          --df-messenger-chips-text-wrap: "nowrap"
           bottom: 16px;
           right: 16px;
           
@@ -29,12 +29,14 @@
     <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
     <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"> 
-    <script src="https://unpkg.com/jwt-decode@2.0.4/build/jwt-decode.min.js"></script>  
+    <script src="https://unpkg.com/jwt-decode@2.0.4/build/jwt-decode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/arikw/itm-to-wgs84-converter@1/src/index.js"></script>
 </head> 
   
 <body> 
     <div hidden id="jwt">ey..</div>
-    <div id="location">xx.yy</div>
+    <div id="count">0</div>
+    <div id="location">xx,yy</div>
     <button class="mdc-button mdc-button--raised"
             onClick="expire()">
         <span class="mdc-button__ripple"></span>
@@ -50,6 +52,10 @@
     <div>
         <video id="vid"></video>
     </div>
+    <button class="mdc-button mdc-button--raised"
+            onclick="launchMaps()">
+        <span>Launch Map</span>
+    </button>
     <df-messenger
         project-id="muni-tlv"
         agent-id="46727f85-4983-4edb-b8b1-55df166837da"
@@ -69,11 +75,21 @@
     <script>
 
         const accessTokenDiv = document.getElementById('jwt');
+        const locationDiv = document.getElementById('location');
         const dfMessenger = document.querySelector('df-messenger');
+        const countDiv = document.getElementById("count");
 
         function receiveAccessToken(accessToken) {
+
+            console.log("receiveAccessToken called")
             var token = jwt_decode(accessToken);
-            dfMessenger.renderCustomText('שלום' + token.name)
+
+            var cnt = parseInt(countDiv.innerText, 10);
+            console.log("Count: " + cnt)
+            if( cnt == 0 ) {
+                dfMessenger.renderCustomText('שלום' + token.name)
+            }
+            countDiv.textContent = cnt + 1;
             accessTokenDiv.innerText = accessToken;
 
             const expirationDiv = document.getElementById("expirationTime");
@@ -86,6 +102,16 @@
                 webViewInterface = window.Android
                 webViewInterface.refreshAccessToken();
 
+        }
+
+        function launchMaps(latitude, longitude, label)
+        {
+            webViewInterface = window.Android
+            webViewInterface.launchGoogleMaps(latitude, // latitude 
+                                                longitude, // longitude
+                                                label // label
+                                                //18 // zoom level of the map: from 0 to 21
+                                            );        
         }
 
         function openCamera() {
@@ -144,22 +170,27 @@
         }
 
         if ("geolocation" in navigator) {
-            alert('geolocation ia availabe')
+            //alert('geolocation is availabe')
             const watchID = navigator.geolocation.watchPosition((position) => {
-                const location = `${position.coords.latitude}, ${position.coords.longitude}`
+
+                var location = `${position.coords.latitude},${position.coords.longitude}`
+
+                // Comment these lines for location-aware app
+                const latitude = 32.084946
+                const longitude = 34.788423
+
+                location = `${latitude},${longitude}`
                 console.log(location);
-                const locationDiv = document.getElementById("location");
+                
                 locationDiv.innerText = location;
             }, () => {
                 alert('No geolocation available')
             })
         }
 
-        //dfMessenger.renderCustomText('שלום')
-
         window.addEventListener('df-messenger-loaded', function() {
 
-            console.log('Messenger is now ready.');
+            console.log('Messenger is ready.');
 
             //const sendButton = document.shadowRoot.getElementById('send-icon-button');
 
@@ -207,25 +238,52 @@
         window.addEventListener('df-response-received', (event) => {
             console.log(event.detail)
         })
-        window.addEventListener('df-chip-clicked', (event) => {
+        window.addEventListener('df-chip-clicked', async (event) => {
             console.log(event)
+
+            if( event.detail.actionLink === "geo://" ) {
+                const startPosition = event.detail.text.indexOf("[");
+                const endPosition = event.detail.text.lastIndexOf("]")
+                const _location = event.detail.text.substring(startPosition+1, endPosition);
+                const parts = _location.split(",")
+
+                const east = parseInt(parts[0], 10);
+                const north = parseInt(parts[1], 10);
+
+                const [ latitude, longitude ] = ItmToWgs84Converter.itm2wgs84(east, north); //, 665784); //parts[0], parts[1]);
+                launchMaps(latitude, longitude, event.detail.text)
+            }
+            
         })
         window.addEventListener('df-user-input-entered', (event) => {
             console.log(event)
 
             const jwt = accessTokenDiv.innerText;
-            var token = jwt_decode(jwt);
 
-            const queryParams = {
-                parameters:{
-                  "jwt": jwt,
-                  "userEmail": token["signInNamesInfo.emailAddress"],
-                  "userName": token.name,
-                  "userId": token["signInNames.citizenId"]
-                  }
-              };
+            try {
+                const token = jwt_decode(jwt);
 
-            dfMessenger.setQueryParameters(queryParams)            
+                const coordinates = locationDiv.innerText.split(",");
+                const latitude = parseFloat(coordinates[0]);
+                const longitude = parseFloat(coordinates[1]);
+
+                const queryParams = {
+                    parameters:{
+                    "jwt": jwt,
+                    "userEmail": token["signInNamesInfo.emailAddress"],
+                    "userName": token.name,
+                    "userId": token["signInNames.citizenId"],
+                    "latitude": latitude,
+                    "longitude" : longitude
+                    }
+                };
+
+                dfMessenger.setQueryParameters(queryParams)     
+            } catch(ex) {
+                console.log(ex.message)
+            }
+
+        
         })
         
     </script>
