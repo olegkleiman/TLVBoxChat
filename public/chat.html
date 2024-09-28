@@ -170,7 +170,7 @@
         }
 
         if ("geolocation" in navigator) {
-            //alert('geolocation is availabe')
+            alert('The assistant is aware of your geolocation')
             const watchID = navigator.geolocation.watchPosition((position) => {
 
                 var location = `${position.coords.latitude},${position.coords.longitude}`
@@ -250,8 +250,10 @@
                 const east = parseInt(parts[0], 10);
                 const north = parseInt(parts[1], 10);
 
-                const [ latitude, longitude ] = ItmToWgs84Converter.itm2wgs84(east, north); //, 665784); //parts[0], parts[1]);
+                const [ latitude, longitude ] = ItmToWgs84Converter.itm2wgs84(east, north); 
+                alert(`${latitude}  ${longitude}`)
                 launchMaps(latitude, longitude, event.detail.text)
+ 
             }
             
         })
