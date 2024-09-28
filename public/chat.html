@@ -99,14 +99,14 @@
 
         function expire() {
 
-                webViewInterface = window.Android
+                webViewInterface = window.Native
                 webViewInterface.refreshAccessToken();
 
         }
 
         function launchMaps(latitude, longitude, label)
         {
-            webViewInterface = window.Android
+            webViewInterface = window.Native
             webViewInterface.launchGoogleMaps(latitude, // latitude 
                                                 longitude, // longitude
                                                 label // label
@@ -170,9 +170,15 @@
         }
 
         if ("geolocation" in navigator) {
-            alert('The assistant is aware of your geolocation')
+            var options = {
+                enableHighAccuracy: false,
+                timeout: 5000,
+                maximumAge: 0 // 0 means that the device cannot use a cached position and must attempt to retrieve the real current position
+            };
+
             const watchID = navigator.geolocation.watchPosition((position) => {
 
+                //alert('The assistant is aware of your geolocation')
                 var location = `${position.coords.latitude},${position.coords.longitude}`
 
                 // Comment these lines for location-aware app
@@ -185,7 +191,7 @@
                 locationDiv.innerText = location;
             }, () => {
                 alert('No geolocation available')
-            })
+            }, options)
         }
 
         window.addEventListener('df-messenger-loaded', function() {
