@@ -176,22 +176,28 @@
                 maximumAge: 0 // 0 means that the device cannot use a cached position and must attempt to retrieve the real current position
             };
 
+            alert("Attempting geolocation")
+
             const watchID = navigator.geolocation.watchPosition((position) => {
+
+                console.log(`Geolocation WatchId: ${watchID}`)
 
                 //alert('The assistant is aware of your geolocation')
                 var location = `${position.coords.latitude},${position.coords.longitude}`
 
-                // Comment these lines for location-aware app
+                // Comment these 3 lines for location-aware app
                 const latitude = 32.084946
                 const longitude = 34.788423
-
                 location = `${latitude},${longitude}`
+
                 console.log(location);
                 
                 locationDiv.innerText = location;
-            }, () => {
+            }, (error) => {
+                console.error(error.message)
                 alert('No geolocation available')
-            }, options)
+            }, options);
+            
         }
 
         window.addEventListener('df-messenger-loaded', function() {

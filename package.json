@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "start": "webpack serve --port 8087 --mode=development",
-    "build": "webpack --mode production" 
+    "build": "webpack --mode=development" 
   },
   "dependencies": {
     "@babel/core": "^7.24.7",
