@@ -79,6 +79,8 @@
         const dfMessenger = document.querySelector('df-messenger');
         const countDiv = document.getElementById("count");
 
+        //alert("Loading")
+
         function receiveAccessToken(accessToken) {
 
             console.log("receiveAccessToken called")
@@ -169,36 +171,32 @@
 
         }
 
-        if ("geolocation" in navigator) {
-            var options = {
-                enableHighAccuracy: false,
-                timeout: 5000,
-                maximumAge: 0 // 0 means that the device cannot use a cached position and must attempt to retrieve the real current position
-            };
+        function geoSuccess(position) {
 
-            alert("Attempting geolocation")
-
-            const watchID = navigator.geolocation.watchPosition((position) => {
-
-                console.log(`Geolocation WatchId: ${watchID}`)
-
-                //alert('The assistant is aware of your geolocation')
                 var location = `${position.coords.latitude},${position.coords.longitude}`
 
                 // Comment these 3 lines for location-aware app
-                const latitude = 32.084946
-                const longitude = 34.788423
-                location = `${latitude},${longitude}`
+ //               const latitude = 32.084946
+ //               const longitude = 34.788423
+ //               location = `${latitude},${longitude}`
 
                 console.log(location);
                 
                 locationDiv.innerText = location;
-            }, (error) => {
-                console.error(error.message)
-                alert('No geolocation available')
-            }, options);
-            
         }
+
+        function geoError(error) {
+                //console.error(error.message)
+                alert(`Error: ${error.message}`)
+        }
+
+        if( !navigator.geolocation ) {
+            alert('No geolocation available')
+        } else {
+            navigator.geolocation.getCurrentPosition(geoSuccess, geoError);
+            //console.log(`WatchId: ${watchID}`)
+        }
+            
 
         window.addEventListener('df-messenger-loaded', function() {
 
