@@ -52,10 +52,6 @@
     <div>
         <video id="vid"></video>
     </div>
-    <button class="mdc-button mdc-button--raised"
-            onclick="launchMaps()">
-        <span>Launch Map</span>
-    </button>
     <df-messenger
         project-id="muni-tlv"
         agent-id="46727f85-4983-4edb-b8b1-55df166837da"
@@ -106,15 +102,15 @@
 
         }
 
-        function launchMaps(latitude, longitude, label)
-        {
-            webViewInterface = window.Native
-            webViewInterface.launchGoogleMaps(latitude, // latitude 
-                                                longitude, // longitude
-                                                label // label
-                                                //18 // zoom level of the map: from 0 to 21
-                                            );        
-        }
+        // function launchMaps(latitude, longitude, label)
+        // {
+        //     webViewInterface = window.Native
+        //     webViewInterface.launchGoogleMaps(latitude, // latitude 
+        //                                         longitude, // longitude
+        //                                         label // label
+        //                                         //18 // zoom level of the map: from 0 to 21
+        //                                     );        
+        // }
 
         function openCamera() {
             
@@ -176,9 +172,9 @@
                 var location = `${position.coords.latitude},${position.coords.longitude}`
 
                 // Comment these 3 lines for location-aware app
- //               const latitude = 32.084946
- //               const longitude = 34.788423
- //               location = `${latitude},${longitude}`
+               const latitude = 32.081779
+               const longitude = 34.780675
+               location = `${latitude},${longitude}`
 
                 console.log(location);
                 
@@ -251,20 +247,19 @@
         window.addEventListener('df-chip-clicked', async (event) => {
             console.log(event)
 
-            if( event.detail.actionLink === "geo://" ) {
-                const startPosition = event.detail.text.indexOf("[");
-                const endPosition = event.detail.text.lastIndexOf("]")
-                const _location = event.detail.text.substring(startPosition+1, endPosition);
-                const parts = _location.split(",")
+            // if( event.detail.actionLink === "geo://" ) {
+            //     const startPosition = event.detail.text.indexOf("[");
+            //     const endPosition = event.detail.text.lastIndexOf("]")
+            //     const _location = event.detail.text.substring(startPosition+1, endPosition);
+            //     const parts = _location.split(",")
 
-                const east = parseInt(parts[0], 10);
-                const north = parseInt(parts[1], 10);
+            //     const east = parseInt(parts[0], 10);
+            //     const north = parseInt(parts[1], 10);
 
-                const [ latitude, longitude ] = ItmToWgs84Converter.itm2wgs84(east, north); 
-                alert(`${latitude}  ${longitude}`)
-                launchMaps(latitude, longitude, event.detail.text)
- 
-            }
+            //     const [ latitude, longitude ] = ItmToWgs84Converter.itm2wgs84(east, north); 
+            //     alert(`${latitude}  ${longitude}`)
+            //     launchMaps(latitude, longitude, event.detail.text)
+            // }
             
         })
         window.addEventListener('df-user-input-entered', (event) => {
