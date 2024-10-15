@@ -50,10 +50,15 @@
     </button>
     <div id="expirationTime"></div>
     <button class="mdc-button mdc-button--raised"
-            onClick="openCamera()">
+            onClick="newSession()">
         <span class="mdc-button__ripple"></span>
-        <span class="mdc-button__label">Open Camera</span>
+        <span class="mdc-button__label">New Session</span>
     </button>
+    <div>
+        <button id="record" style="padding: 0;border:none;background: none;">
+            <img alt="Start" id="mic_img" style="border:none;" src="https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif" />
+        </button>
+    </div>
     <div>
         <video id="vid"></video>
     </div>
@@ -85,6 +90,32 @@
         const locationDiv = document.getElementById('location');
         const dfMessenger = document.querySelector('df-messenger');
         const countDiv = document.getElementById("count");
+
+        const projectId = 'muni-tlv';
+            const apiKey = 'AIzaSyA_rpSTA3xIzFcAK-9OSdF03Z9AK_0kogs';
+
+            const startRecording = () => {
+                micImage.alt = "Stop";
+                micImage.src = "https://www.google.com/intl/en/chrome/assets/common/images/content/mic-animate.gif";
+            
+                recognition.start();
+            }
+            const stopRecording = () => {
+                micImage.alt = "Start";
+                micImage.src = "https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif";
+
+                recognition.stop();
+            }
+
+        // When the record button is clicked, start recording audio
+        document.getElementById('record').addEventListener('click', () => {
+            
+            if( micImage.alt == "Start" ) 
+                startRecording();
+            else
+                stopRecording();
+
+        })
 
         //alert("Loading")
 
@@ -127,6 +158,12 @@
                 webViewInterface = window.Native
                 webViewInterface.refreshAccessToken();
 
+        }
+
+        function newSession()
+        {
+            dfMessenger.startNewSession({ retainHistory: true });
+            location.reload()
         }
 
         function openCamera() {
