@@ -25,7 +25,6 @@
           --df-messenger-chips-text-wrap: "nowrap"
           bottom: 16px;
           right: 16px;
-          
         }
     </style>
     <link rel="stylesheet" href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css">    
@@ -39,6 +38,7 @@
 </head> 
   
 <body> 
+    <div>Version 24.10.2024 - Omon Ra</div>
     <div hidden id="jwt">ey..</div>
     <div id="count">0</div>
     <div id="location">xx,yy</div>
@@ -54,42 +54,95 @@
         <span class="mdc-button__ripple"></span>
         <span class="mdc-button__label">New Session</span>
     </button>
+    <!-- <div>
+        <video id="vid"></video>
+    </div> -->
+
     <div>
-        <button id="record" style="padding: 0;border:none;background: none;">
-            <img alt="Start" id="mic_img" style="border:none;" src="https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif" />
+        <!-- Using intent='' You can use an event handler that will be called for this event and will produce the first agent message. -->
+        <!-- session-id	Optional	A session ID. If this is not supplied, the integration will generate a unique ID for each chat dialog. -->
+        <df-messenger
+            project-id="muni-tlv"
+            agent-id="46727f85-4983-4edb-b8b1-55df166837da"
+            language-code="he-il"
+            max-query-length="-1"
+            storage-option="none"
+            df-cx="true"
+            intent="'WELCOME" 
+            chat-icon="https://img.freepik.com/premium-vector/chat-logo-with-robot-face_1124-277.jpg"
+            chat-title-icon="https://img.freepik.com/premium-vector/chat-logo-with-robot-face_1124-277.jpg"
+            allow-feedback="all">
+            <df-messenger-chat-bubble
+                expanded="true"
+                chat-title="TLV Box"
+                chat-subtitle="עוזרת אישית"
+                enable-file-upload
+                allow-fullscreen="always">
+            </df-messenger-chat-bubble>
+        </df-messenger>
+        <button id="record" style="z-index: 1000;position: absolute; bottom: -723px; right: 60px;padding: 0;border:none;background: none;">
+        <!-- <button id="record" style="z-index: 1000;position: absolute; top: 685px; right: 60px;padding: 0;border:none;background: none;"></button> -->
+            <img alt="Start" id="mic_img" style="border:none;" width="32" height="32" src="https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif" />
         </button>
     </div>
-    <div>
-        <video id="vid"></video>
-    </div>
 
-    <!-- Using intent='' You can use an event handler that will be called for this event and will produce the first agent message. -->
-    <!-- session-id	Optional	A session ID. If this is not supplied, the integration will generate a unique ID for each chat dialog. -->
-    <df-messenger
-        project-id="muni-tlv"
-        agent-id="46727f85-4983-4edb-b8b1-55df166837da"
-        language-code="he-il"
-        max-query-length="-1"
-        storage-option="none"
-        df-cx="true"
-        intent="'WELCOME" 
-        chat-icon="https://img.freepik.com/premium-vector/chat-logo-with-robot-face_1124-277.jpg"
-        chat-title-icon="https://img.freepik.com/premium-vector/chat-logo-with-robot-face_1124-277.jpg"
-        allow-feedback="all">
-        <df-messenger-chat-bubble
-            expanded="true"
-            chat-title="TLV Box"
-            chat-subtitle="עוזרת אישית"
-            enable-file-upload
-            allow-fullscreen="always">
-        </df-messenger-chat-bubble>
-    </df-messenger>
+    <!-- <script>
+        setTimeout(function(){ 
+            document.querySelector("df-messenger")
+                .querySelector("df-messenger-chat-bubble")
+                .querySelector("df-messenger-user-input")
+                .shadowRoot.querySelector(".input-box-wrapper > input")
+                .placeholder="New placeholder text" }, 1000);
+    </script> -->
+
     <script>
 
         const accessTokenDiv = document.getElementById('jwt');
         const locationDiv = document.getElementById('location');
         const dfMessenger = document.querySelector('df-messenger');
+        const micButton = document.getElementById('record');
+        const micImage = document.getElementById('mic_img');
+        var currentVoice;
         const countDiv = document.getElementById("count");
+
+        const recognition = new webkitSpeechRecognition();
+        recognition.lang = 'he-IL';
+        recognition.continuous = false; // when the user stops talking, speech recognition will end.
+        recognition.interimResults = false; // only results returned by the recognizer are final and will not change. 
+        recognition.onspeechend = () => {
+            recognition.stop();
+        };      
+        recognition.onnomatch = (event) => {
+            transcriptElement.innerText = "I didn't recognize your speech.";
+        }; 
+        recognition.onerror = (event) => {
+            console.error(`Error occurred while transcribing audio: ${event.error}`);
+        }
+        recognition.onresult = (event) => {
+            stopRecording();
+
+            const transcript = event.results[0][0].transcript;
+
+            dfMessenger.sendQuery(transcript, false);
+
+            let utterance = new SpeechSynthesisUtterance(transcript);
+            window.speechSynthesis.onvoiceschanged = () => {
+                var voices = window.speechSynthesis.getVoices();
+                currentVoice = voices[0];
+                utterance.voice = voices[0];
+                utterance.pitch = 1
+                utterance.rate = 0.5
+                speechSynthesis.speak(utterance)
+            };
+            utterance.onend = function (event) {
+                console.log("SpeechSynthesisUtterance.onend");
+            };
+            utterance.onerror = function (event) {
+                console.error("SpeechSynthesisUtterance.onerror");
+            };
+            utterance.voice = currentVoice;
+            speechSynthesis.speak(utterance)
+        }
 
         const projectId = 'muni-tlv';
             const apiKey = 'AIzaSyA_rpSTA3xIzFcAK-9OSdF03Z9AK_0kogs';
@@ -128,29 +181,13 @@
             console.log("Count: " + cnt)
             if( cnt == 0 ) {
                 dfMessenger.renderCustomText('שלום' + token.name)
-
-                const payload = [
-                    {
-                        "type": "info",
-                        "title": "Info item title",
-                        "subtitle": "Info item subtitle",
-                        "image": {
-                        "rawUrl": "https://example.com/images/logo.png"
-                        },
-                        "anchor": {
-                        "href": "https://example.com",
-                        "target": "_blank"
-                        }
-                    }
-                ];
-                dfMessenger.renderCustomCard(payload);
             }
             countDiv.textContent = cnt + 1;
             accessTokenDiv.innerText = accessToken;
 
             const expirationDiv = document.getElementById("expirationTime");
             var d = new Date(token.exp * 1000);
-            expirationDiv.innerText = d
+            expirationDiv.innerText = d.toLocaleString()
         }
 
         function expire() {
@@ -246,40 +283,21 @@
             navigator.geolocation.getCurrentPosition(geoSuccess, geoError);
             //console.log(`WatchId: ${watchID}`)
         }
-            
 
-        window.addEventListener('df-messenger-loaded', function() {
+        // window.addEventListener('df-messenger-loaded', function() {
 
-            console.log('Messenger is ready.');
+        //     console.log('Messenger is ready.');
 
-            //const sendButton = document.shadowRoot.getElementById('send-icon-button');
+        //     const queryParams = {
+        //         parameters:{
+        //           "jwt": accessTokenDiv.innerText,
+        //           "User_Authorized": "True",
+        //           "userId": '313069486',
+        //           }
+        //       };
 
-            const payload = [
-                {
-                    "type": "info",
-                    "title": "Info item title",
-                    "subtitle": "Info item subtitle",
-                    "image": {
-                    "rawUrl": "https://example.com/images/logo.png"
-                    },
-                    "anchor": {
-                    "href": "https://example.com",
-                    "target": "_blank"
-                    }
-                }
-            ];
-            dfMessenger.renderCustomCard(payload);
-
-            const queryParams = {
-                parameters:{
-                  "jwt": accessTokenDiv.innerText,
-                  "User_Authorized": "True",
-                  "userId": '313069486',
-                  }
-              };
-
-            //dfMessenger.setQueryParameters(queryParams)
-        });
+        //     //dfMessenger.setQueryParameters(queryParams)
+        // });
 
         window.addEventListener('df-file-upload-completed', function (event) {
             // simulates an end-user input that is normally provided to the agent dialog
