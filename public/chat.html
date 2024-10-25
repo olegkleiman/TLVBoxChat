@@ -2,7 +2,7 @@
 <html> 
   
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes; user-scalable=yes">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
@@ -38,8 +38,8 @@
 </head> 
   
 <body> 
-    <div>Version 24.10.2024 - Omon Ra</div>
-    <div hidden id="jwt">ey..</div>
+    <div>Version October 2024 - Omon Ra</div>
+    <!-- <div hidden id="jwt">ey..</div> -->
     <div id="count">0</div>
     <div id="location">xx,yy</div>
     <button class="mdc-button mdc-button--raised"
@@ -80,7 +80,7 @@
                 allow-fullscreen="always">
             </df-messenger-chat-bubble>
         </df-messenger>
-        <button id="record" style="z-index: 1000;position: absolute; bottom: -723px; right: 60px;padding: 0;border:none;background: none;">
+        <button id="record" style="z-index: 1000;position: absolute;bottom: -722px;right: 62px;padding: 0;border:none;background: none;">
         <!-- <button id="record" style="z-index: 1000;position: absolute; top: 685px; right: 60px;padding: 0;border:none;background: none;"></button> -->
             <img alt="Start" id="mic_img" style="border:none;" width="32" height="32" src="https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif" />
         </button>
@@ -97,7 +97,6 @@
 
     <script>
 
-        const accessTokenDiv = document.getElementById('jwt');
         const locationDiv = document.getElementById('location');
         const dfMessenger = document.querySelector('df-messenger');
         const micButton = document.getElementById('record');
@@ -109,7 +108,14 @@
         recognition.lang = 'he-IL';
         recognition.continuous = false; // when the user stops talking, speech recognition will end.
         recognition.interimResults = false; // only results returned by the recognizer are final and will not change. 
+        recognition.onstart = () => {
+            console.log("Speech recognition started");
+        }
+        recognition.onend = () => {
+            console.log("Speech recognition ended");
+        }
         recognition.onspeechend = () => {
+            console.log("Speech ended");
             recognition.stop();
         };      
         recognition.onnomatch = (event) => {
@@ -125,52 +131,81 @@
 
             dfMessenger.sendQuery(transcript, false);
 
-            let utterance = new SpeechSynthesisUtterance(transcript);
-            window.speechSynthesis.onvoiceschanged = () => {
-                var voices = window.speechSynthesis.getVoices();
-                currentVoice = voices[0];
-                utterance.voice = voices[0];
-                utterance.pitch = 1
-                utterance.rate = 0.5
+            if ('speechSynthesis' in window) {
+                let utterance = new SpeechSynthesisUtterance(transcript);
+                window.speechSynthesis.onvoiceschanged = () => {
+                    var voices = window.speechSynthesis.getVoices();
+                    currentVoice = voices[0];
+                    utterance.voice = voices[0];
+                    utterance.pitch = 1
+                    utterance.rate = 0.5
+                    speechSynthesis.speak(utterance)
+                };
+                utterance.onend = function (event) {
+                    console.log("SpeechSynthesisUtterance.onend");
+                };
+                utterance.onerror = function (event) {
+                    console.error("SpeechSynthesisUtterance.onerror");
+                };
+                utterance.voice = currentVoice;
                 speechSynthesis.speak(utterance)
-            };
-            utterance.onend = function (event) {
-                console.log("SpeechSynthesisUtterance.onend");
-            };
-            utterance.onerror = function (event) {
-                console.error("SpeechSynthesisUtterance.onerror");
-            };
-            utterance.voice = currentVoice;
-            speechSynthesis.speak(utterance)
+            }
         }
 
         const projectId = 'muni-tlv';
-            const apiKey = 'AIzaSyA_rpSTA3xIzFcAK-9OSdF03Z9AK_0kogs';
+        const startRecording = () => {
 
-            const startRecording = () => {
+            try {
+                recognition.start();
+
                 micImage.alt = "Stop";
                 micImage.src = "https://www.google.com/intl/en/chrome/assets/common/images/content/mic-animate.gif";
-            
-                recognition.start();
-            }
-            const stopRecording = () => {
-                micImage.alt = "Start";
-                micImage.src = "https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif";
-
+            } catch(ex) {
+                console.log(ex.message);
                 recognition.stop();
             }
+        }
+        const stopRecording = () => {
+            try {
+                recognition.stop();
+
+                micImage.alt = "Start";
+                micImage.src = "https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif";
+            } catch(ex) {
+                console.log(ex.message);
+            }
+        }
 
         // When the record button is clicked, start recording audio
-        document.getElementById('record').addEventListener('click', () => {
-            
-            if( micImage.alt == "Start" ) 
+        micButton.addEventListener('click', async () => {
+
+            const micPermissions = localStorage.getItem("microphonePermissions"); 
+            if( !micPermissions ) {
+                requestMicrophonePermission()
+                localStorage.setItem("microphonePermissions", "true");
+                return;
+            }   
+
+            if( micImage.alt == "Start" )
                 startRecording();
             else
                 stopRecording();
 
-        })
+        });
 
-        //alert("Loading")
+        async function requestMicrophonePermission() {
+            try {
+                const mediaDevices = navigator.mediaDevices;
+                if (!mediaDevices || !mediaDevices.getUserMedia) {
+                    alert("getUserMedia() not supported.");
+                    return;
+                }
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                console.log("Microphone permission granted!");
+             } catch(ex) {
+                console.error("Microphone permission denied:", ex.message);
+            }
+        }
 
         function receiveAccessToken(accessToken) {
 
@@ -180,10 +215,10 @@
             var cnt = parseInt(countDiv.innerText, 10);
             console.log("Count: " + cnt)
             if( cnt == 0 ) {
-                dfMessenger.renderCustomText('שלום' + token.name)
+                dfMessenger.renderCustomText(`${token.name} שלום`)
             }
             countDiv.textContent = cnt + 1;
-            accessTokenDiv.innerText = accessToken;
+            localStorage.setItem("accessToken", accessToken);
 
             const expirationDiv = document.getElementById("expirationTime");
             var d = new Date(token.exp * 1000);
@@ -290,13 +325,13 @@
 
         //     const queryParams = {
         //         parameters:{
-        //           "jwt": accessTokenDiv.innerText,
+        //           "jwt": localStorage.getItem("accessToken");,
         //           "User_Authorized": "True",
         //           "userId": '313069486',
         //           }
         //       };
 
-        //     //dfMessenger.setQueryParameters(queryParams)
+        //     dfMessenger.setQueryParameters(queryParams)
         // });
 
         window.addEventListener('df-file-upload-completed', function (event) {
@@ -341,9 +376,8 @@
             
         })
         window.addEventListener('df-user-input-entered', (event) => {
-            console.log(event)
-
-            const jwt = accessTokenDiv.innerText;
+            
+            const jwt = localStorage.getItem("accessToken");
 
             try {
                 const token = jwt_decode(jwt);

@@ -9,9 +9,14 @@
     <body>
         
         <div>Tap on the microphone to speak and recognize the spoken text. HEBREW ONLY!</div>
-        <button id="record" style="padding: 0;border:none;background: none;">
-            <img alt="Start" id="mic_img" style="border:none;" src="https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif" />
-        </button>
+        <div>
+            <button id="permissions">
+                Permissions
+            </button>
+            <button id="record" style="padding: 0;border:none;background: none;">
+                <img alt="Start" id="mic_img" style="border:none;" src="https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif" />
+            </button>
+        </div>
         <div id='transcript'></div>
 
         <script>
@@ -49,6 +54,24 @@
                 console.error(`Error occurred while transcribing audio: ${event.error}`);
             }                    
 
+            document.getElementById('permissions').addEventListener('click', () => {
+                requestMicrophonePermission();
+            });
+
+            async function requestMicrophonePermission() {
+            try {
+                const mediaDevices = navigator.mediaDevices;
+                if (!mediaDevices || !mediaDevices.getUserMedia) {
+                    alert("getUserMedia() not supported.");
+                    return;
+                }
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                console.log("Microphone permission granted!");
+            } catch(ex) {
+                console.error("Microphone permission denied:", ex.message);
+            }
+        }
+
             // When the record button is clicked, start recording audio
             document.getElementById('record').addEventListener('click', () => {
                 
@@ -58,7 +81,7 @@
                     stopRecording();
 
             });
-            
+
             // When the recognition service returns a result, send it to the Google Speech-to-text API
             recognition.onresult = (event) => {
 
@@ -69,23 +92,25 @@
 
                 transcriptElement.innerText = transcript;
 
-                let utterance = new SpeechSynthesisUtterance(transcript);
-                window.speechSynthesis.onvoiceschanged = () => {
-                    var voices = window.speechSynthesis.getVoices();
-                    currentVoice = voices[0];
-                    utterance.voice = voices[0];
-                    utterance.pitch = 1
-                    utterance.rate = 0.5
-                    speechSynthesis.speak(utterance)
-                };
-                utterance.onend = function (event) {
-                    console.log("SpeechSynthesisUtterance.onend");
-                };
-                utterance.onerror = function (event) {
-                    console.error("SpeechSynthesisUtterance.onerror");
-                };
-                utterance.voice = currentVoice;                
-                speechSynthesis.speak(utterance)
+                if ('speechSynthesis' in window) {
+                    let utterance = new SpeechSynthesisUtterance(transcript);
+                    window.speechSynthesis.onvoiceschanged = () => {
+                        var voices = window.speechSynthesis.getVoices();
+                        currentVoice = voices[0];
+                        utterance.voice = voices[0];
+                        utterance.pitch = 1
+                        utterance.rate = 0.5
+                        speechSynthesis.speak(utterance)
+                    };
+                    utterance.onend = function (event) {
+                        console.log("SpeechSynthesisUtterance.onend");
+                    };
+                    utterance.onerror = function (event) {
+                        console.error("SpeechSynthesisUtterance.onerror");
+                    };
+                    utterance.voice = currentVoice;                
+                    speechSynthesis.speak(utterance);
+                }
 
                 // const request = {
                 //     config: {
