@@ -11,6 +11,7 @@
     <link rel="shortcut icon" type="image/png" sizes="32x32" href="https://www.tel-aviv.gov.il/_layouts/15/TlvSP2013PublicSite/Images/IriaFavIcon.ico" />
     <style>
         df-messenger {
+            direction: rtl;
           z-index: 999;
           position: fixed;
           --df-messenger-button-titlebar-color: #0a2f79;
@@ -22,12 +23,14 @@
           --df-messenger-message-bot-background: #ecf3fe; 
           --df-messenger-input-background: white;
           --df-messenger-chips-text-wrap: "nowrap"
-          bottom: 16px;
+          --df-messenger-input-info-padding: 30px 30px;
+           bottom: 16px;
           right: 16px;
         }
     </style>
     <link rel="stylesheet" href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css">    
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"> 
+    <link rel="stylesheet" href="./tlvbox.css">
     <script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"></script>
     <script src="https://unpkg.com/jwt-decode@2.0.4/build/jwt-decode.min.js"></script>
     <!-- <script src="https://cdn.jsdelivr.net/gh/arikw/itm-to-wgs84-converter@1/src/index.js"></script> -->
@@ -67,12 +70,12 @@
                 expanded="true"
                 chat-title="TLV Box"
                 chat-subtitle="עוזרת אישית"
-                placeholder-text="...טקסט חופשי"
+                placeholder-text="טקסט חופשי..."
                 chat-title-icon="./assets/img/HAL9001Logo.png"
                 allow-fullscreen="always">
             </df-messenger-chat-bubble>
         </df-messenger>
-        <button id="record" style="z-index: 1000;position: fixed;bottom: 32px;right: 64px;padding: 0;border:none;background: none;">
+        <button id="record" class="message-mic">
             <img alt="Start" id="mic_img" style="border:none;" width="32" height="32" src="https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif" />
         </button>
     </div>
@@ -90,6 +93,21 @@
 
         const locationDiv = document.getElementById('location');
         const dfMessenger = document.querySelector('df-messenger');
+
+        const bubble = dfMessenger.querySelector('df-messenger-chat-bubble');
+        var shadowRoot = bubble.shadowRoot;
+        const chat = shadowRoot.querySelector('df-messenger-chat');
+        shadowRoot = chat.shadowRoot;
+        const userInput = shadowRoot.querySelector('df-messenger-user-input');
+        shadowRoot = userInput.shadowRoot;
+
+        const inputWrapper = shadowRoot.querySelector(".input-wrapper");
+        inputWrapper.style = "padding: 0px 0px 0px 16px;" 
+        const sendButton = shadowRoot.querySelector("#send-icon-button");
+        sendButton.style = "padding-left: 38px;"
+        const sendIcon = shadowRoot.querySelector('#send-icon');
+        sendIcon.style = "transform: scale(-1);"
+        
         const micButton = document.getElementById('record');
         const micImage = document.getElementById('mic_img');
         var currentVoice;
