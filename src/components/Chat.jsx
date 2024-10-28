@@ -75,14 +75,14 @@ const Chat = ({match}) => {
             language-code="he-il"
             max-query-length="-1"
             storage-option="none"
-            chat-icon="https://img.freepik.com/premium-vector/chat-logo-with-robot-face_1124-277.jpg"
-            chat-title-icon="https://img.freepik.com/premium-vector/chat-logo-with-robot-face_1124-277.jpg"
             allow-feedback="all"
             ref={dfMessenger}>
             <df-messenger-chat-bubble
                 expanded="true"
                 chat-title="TLV Box"
-                chat-subtitle="Personal Assistant"
+                chat-subtitle="עוזרת אישית"
+                placeholder-text="...טקסט חופשי"
+                chat-title-icon="./assets/img/HAL9001Logo.png"
                 allow-fullscreen="always">
             </df-messenger-chat-bubble>
         </df-messenger>
