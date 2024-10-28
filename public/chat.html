@@ -137,7 +137,7 @@
             stopRecording();
 
             const transcript = event.results[0][0].transcript;
-
+            dfMessenger.renderCustomText(transcript);
             dfMessenger.sendQuery(transcript, false);
 
             if ('speechSynthesis' in window) {
