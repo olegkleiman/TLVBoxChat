@@ -1,0 +1,25 @@
+svg {
+    transform: scaleX(-1);
+    margin-left: auto;
+}
+df-messenger-message {
+    direction: rtl;
+    text-align: right;
+    color: green;
+    font-weight: bold;
+}
+df-messenger-chat {
+    direction: rtl;
+    text-align: right;
+    color: green;
+    font-weight: bold;
+}
+df-messenger-user-input #send-icon {
+    transform: scaleX(-1);
+    margin-left: auto;
+    direction: rtl;
+}
+
+#count {
+    background-color: brown;
+}

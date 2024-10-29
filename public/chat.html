@@ -14,6 +14,7 @@
             direction: rtl;
           z-index: 999;
           position: fixed;
+          /* direction: rtl; */
           --df-messenger-button-titlebar-color: #0a2f79;
           --df-messenger-font-color: #000;
           --df-messenger-font-family: Google Sans;
@@ -23,9 +24,8 @@
           --df-messenger-message-bot-background: #ecf3fe; 
           --df-messenger-input-background: white;
           --df-messenger-chips-text-wrap: "nowrap"
-          --df-messenger-input-info-padding: 30px 30px;
-           bottom: 16px;
-          right: 16px;
+          bottom: 16px;
+          right: 16px; 
         }
     </style>
     <link rel="stylesheet" href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css">    
@@ -34,6 +34,7 @@
     <script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"></script>
     <script src="https://unpkg.com/jwt-decode@2.0.4/build/jwt-decode.min.js"></script>
     <!-- <script src="https://cdn.jsdelivr.net/gh/arikw/itm-to-wgs84-converter@1/src/index.js"></script> -->
+    <link rel="stylesheet" href="./tlvbox.css">
 </head> 
   
 <body> 
@@ -65,49 +66,30 @@
             agent-id="46727f85-4983-4edb-b8b1-55df166837da"
             language-code="he-il"
             max-query-length="-1"
-            storage-option="none">
+            allow-feedback="all">
             <df-messenger-chat-bubble
                 expanded="true"
                 chat-title="TLV Box"
                 chat-subtitle="עוזרת אישית"
                 placeholder-text="טקסט חופשי..."
                 chat-title-icon="./assets/img/HAL9001Logo.png"
+                enable-file-upload
                 allow-fullscreen="always">
             </df-messenger-chat-bubble>
         </df-messenger>
-        <button id="record" class="message-mic">
+        <button id="record" style="z-index: 1000;position: fixed;bottom: 32px;right: 64px;padding: 0;border:none;background: none;">
             <img alt="Start" id="mic_img" style="border:none;" width="32" height="32" src="https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif" />
         </button>
     </div>
 
-    <!-- <script>
-        setTimeout(function(){ 
-            document.querySelector("df-messenger")
-                .querySelector("df-messenger-chat-bubble")
-                .querySelector("df-messenger-user-input")
-                .shadowRoot.querySelector(".input-box-wrapper > input")
-                .placeholder="New placeholder text" }, 1000);
-    </script> -->
-
     <script>
+
+        // globalThis.dfInstallUtils({
+        //     'gcs-bucket-upload': {bucketName: 'tlvbox_picture'},
+        // });
 
         const locationDiv = document.getElementById('location');
         const dfMessenger = document.querySelector('df-messenger');
-
-        const bubble = dfMessenger.querySelector('df-messenger-chat-bubble');
-        var shadowRoot = bubble.shadowRoot;
-        const chat = shadowRoot.querySelector('df-messenger-chat');
-        shadowRoot = chat.shadowRoot;
-        const userInput = shadowRoot.querySelector('df-messenger-user-input');
-        shadowRoot = userInput.shadowRoot;
-
-        const inputWrapper = shadowRoot.querySelector(".input-wrapper");
-        inputWrapper.style = "padding: 0px 0px 0px 16px;" 
-        const sendButton = shadowRoot.querySelector("#send-icon-button");
-        sendButton.style = "padding-left: 38px;"
-        const sendIcon = shadowRoot.querySelector('#send-icon');
-        sendIcon.style = "transform: scale(-1);"
-        
         const micButton = document.getElementById('record');
         const micImage = document.getElementById('mic_img');
         var currentVoice;
@@ -343,10 +325,24 @@
         //     dfMessenger.setQueryParameters(queryParams)
         // });
 
-        window.addEventListener('df-file-upload-completed', function (event) {
+        dfMessenger.addEventListener('df-file-upload-completed', function (event) {
             // simulates an end-user input that is normally provided to the agent dialog
             // (May also be used to simulate events)
             dfMessenger.sendRequest('query','file uploaded');
+        });
+
+        dfMessenger.addEventListener('df-upload-file-selected', async (event) => {
+            const url = URL.createObjectURL(event.detail.file);
+            console.log(`URL of selected file: ${url}`);
+
+            const reader = new FileReader();
+            reader.onload = () => {
+                console.log(reader.result);
+            }
+            reader.onerror = (error) => {
+                console.error(error)
+            }
+            reader.readAsDataURL(event.detail.file);
         });
 
         window.addEventListener('df-session-id-set', function(event) {
