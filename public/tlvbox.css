@@ -37,7 +37,7 @@ a:hover {
   z-index: 1000;
   position: fixed;
   bottom: 32px;
-  left: 48px;
+  right: 64px;
   padding: 0;
   border:none;
   background: none;

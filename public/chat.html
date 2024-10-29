@@ -11,10 +11,9 @@
     <link rel="shortcut icon" type="image/png" sizes="32x32" href="https://www.tel-aviv.gov.il/_layouts/15/TlvSP2013PublicSite/Images/IriaFavIcon.ico" />
     <style>
         df-messenger {
-            direction: rtl;
+          /*  direction: rtl; */
           z-index: 999;
           position: fixed;
-          /* direction: rtl; */
           --df-messenger-button-titlebar-color: #0a2f79;
           --df-messenger-font-color: #000;
           --df-messenger-font-family: Google Sans;
@@ -77,16 +76,16 @@
                 allow-fullscreen="always">
             </df-messenger-chat-bubble>
         </df-messenger>
-        <button id="record" style="z-index: 1000;position: fixed;bottom: 32px;right: 64px;padding: 0;border:none;background: none;">
+        <button id="record" class="message-mic">
             <img alt="Start" id="mic_img" style="border:none;" width="32" height="32" src="https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif" />
         </button>
     </div>
 
     <script>
 
-        // globalThis.dfInstallUtils({
-        //     'gcs-bucket-upload': {bucketName: 'tlvbox_picture'},
-        // });
+        globalThis.dfInstallUtils({
+            'gcs-bucket-upload': {bucketName: 'tlvbox_picture'},
+        });
 
         const locationDiv = document.getElementById('location');
         const dfMessenger = document.querySelector('df-messenger');
@@ -328,6 +327,16 @@
         dfMessenger.addEventListener('df-file-upload-completed', function (event) {
             // simulates an end-user input that is normally provided to the agent dialog
             // (May also be used to simulate events)
+
+            console.log(event.detail);
+
+            const queryParams = {
+                parameters:{
+                  "uploaded_file_name": event.detail
+                  }
+              };
+
+            dfMessenger.setQueryParameters(queryParams)   
             dfMessenger.sendRequest('query','file uploaded');
         });
 
@@ -335,9 +344,40 @@
             const url = URL.createObjectURL(event.detail.file);
             console.log(`URL of selected file: ${url}`);
 
+            const eventDetail = event.detail;
+
+            // const stream = event.detail.file.stream();
+            // const readableStream = await stream.getReader();
+            // const chunk = await readableStream.read();
+            // const _val = new TextDecoder('utf-8').decode(chunk.value);
+
             const reader = new FileReader();
-            reader.onload = () => {
-                console.log(reader.result);
+
+            reader.onload = async () => {
+                
+                try {
+                    const parts = dfMessenger.sessionId.split("dfMessenger-");
+                    const data = {
+                            session_id: parts[1],
+                            picture_base64: reader.result
+                        }
+                    const resp = await fetch('https://tlvbox.azurewebsites.net/api/UploadImage', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json', 
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    console.log(resp);
+
+                    const event = new Event("df-file-upload-completed", {
+                        detail: eventDetail
+                    });
+                    dfMessenger.dispatchEvent(event);
+
+                } catch(ex) {
+                    console.error(ex.message);
+                }
             }
             reader.onerror = (error) => {
                 console.error(error)
