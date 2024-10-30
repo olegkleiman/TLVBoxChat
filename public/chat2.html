@@ -62,8 +62,8 @@
         <!-- session-id	Optional	A session ID. If this is not supplied, the integration will generate a unique ID for each chat dialog. -->
         <df-messenger
             project-id="muni-tlv"
-            agent-id="46727f85-4983-4edb-b8b1-55df166837da"
-            language-code="he-il"
+            agent-id="f0fca620-8041-4f6b-b8cd-71d029c7768f"
+            language-code="en"
             max-query-length="-1"
             allow-feedback="all">
             <df-messenger-chat-bubble
@@ -72,19 +72,13 @@
                 chat-subtitle="עוזרת אישית"
                 placeholder-text="טקסט חופשי..."
                 chat-title-icon="./assets/img/HAL9001Logo.png"
+                enable-file-upload
                 allow-fullscreen="always">
             </df-messenger-chat-bubble>
         </df-messenger>
         <button id="record" class="message-mic">
             <img alt="Start" id="mic_img" style="border:none;" width="32" height="32" src="https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif" />
         </button>
-        <button id="camera" class="message-camera" onclick="openCamera()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 256 256">
-                <path d="M208,56H180.28L166.65,35.56A8,8,0,0,0,160,32H96a8,8,0,0,0-6.65,3.56L75.71,56H48A24,24,0,0,0,24,80V192a24,24,0,0,0,24,24H208a24,24,0,0,0,24-24V80A24,24,0,0,0,208,56Zm8,136a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V80a8,8,0,0,1,8-8H80a8,8,0,0,0,6.66-3.56L100.28,48h55.43l13.63,20.44A8,8,0,0,0,176,72h32a8,8,0,0,1,8,8ZM128,88a44,44,0,1,0,44,44A44.05,44.05,0,0,0,128,88Zm0,72a28,28,0,1,1,28-28A28,28,0,0,1,128,160Z">
-                </path>
-            </svg>
-        </button>
-/s
     </div>
 
     <script>
@@ -96,7 +90,6 @@
         const locationDiv = document.getElementById('location');
         const dfMessenger = document.querySelector('df-messenger');
         const micButton = document.getElementById('record');
-        const cameraButton = document.getElementById('camera');
         const micImage = document.getElementById('mic_img');
         var currentVoice;
         const countDiv = document.getElementById("count");
@@ -377,7 +370,7 @@
                     });
                     console.log(resp);
 
-                    const event = new Event("df-file-upload-completed", {
+                    const event = new CustomEvent("df-file-upload-completed", {
                         detail: eventDetail
                     });
                     dfMessenger.dispatchEvent(event);
