@@ -53,9 +53,9 @@
         <span class="mdc-button__ripple"></span>
         <span class="mdc-button__label">New Session</span>
     </button>
-    <!-- <div>
+    <div>
         <video id="vid"></video>
-    </div> -->
+    </div>
 
     <div>
         <!-- Using intent='' You can use an event handler that will be called for this event and will produce the first agent message. -->
@@ -75,16 +75,16 @@
                 allow-fullscreen="always">
             </df-messenger-chat-bubble>
         </df-messenger>
-        <button id="record" class="message-mic">
+        <button id="record" class="message-mic" onclick="openMicrophone()">
             <img alt="Start" id="mic_img" style="border:none;" width="32" height="32" src="https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif" />
         </button>
-        <!-- <button id="camera" class="message-camera" onclick="openCamera()">
+        <button id="camera" class="message-camera" onclick="openCamera()">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 256 256">
                 <path d="M208,56H180.28L166.65,35.56A8,8,0,0,0,160,32H96a8,8,0,0,0-6.65,3.56L75.71,56H48A24,24,0,0,0,24,80V192a24,24,0,0,0,24,24H208a24,24,0,0,0,24-24V80A24,24,0,0,0,208,56Zm8,136a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V80a8,8,0,0,1,8-8H80a8,8,0,0,0,6.66-3.56L100.28,48h55.43l13.63,20.44A8,8,0,0,0,176,72h32a8,8,0,0,1,8,8ZM128,88a44,44,0,1,0,44,44A44.05,44.05,0,0,0,128,88Zm0,72a28,28,0,1,1,28-28A28,28,0,0,1,128,160Z">
                 </path>
             </svg>
-        </button> -->
-        <input type="file" accept="image/*" class="message-camera" capture="camera" id="camera">
+        </button>
+        <!-- <input type="file" accept="image/*" class="message-camera" capture="camera" id="camera"> -->
     </div>
 
     <script>
@@ -174,7 +174,7 @@
         }
 
         // When the record button is clicked, start recording audio
-        micButton.addEventListener('click', async () => {
+        const openMicrophone = () => {
 
             const micPermissions = localStorage.getItem("microphonePermissions"); 
             if( !micPermissions ) {
@@ -188,7 +188,7 @@
             else
                 stopRecording();
 
-        });
+        };
 
         async function requestMicrophonePermission() {
             try {
@@ -197,7 +197,8 @@
                     alert("getUserMedia() not supported.");
                     return;
                 }
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                // prompts the user for permission to use a microphone
+                await navigator.mediaDevices.getUserMedia({ audio: true });
                 console.log("Microphone permission granted!");
              } catch(ex) {
                 console.error("Microphone permission denied:", ex.message);
@@ -235,29 +236,50 @@
             location.reload()
         }
 
-        function openCamera() {
+        async function openCamera() {
 
-            const mediaDevices = navigator.mediaDevices;
-            if (!mediaDevices || !mediaDevices.getUserMedia) {
-                alert("getUserMedia() not supported.");
+            const cameraPermissions = localStorage.getItem("cameraPermissions"); 
+            if( !cameraPermissions ) {
+                const mediaStream = await requestCameraPermission();
+                
+                if( !mediaStream ) {
+                    localStorage.setItem("cameraPermissions", "false");
+                    return;
+                }
+
+                localStorage.setItem("cameraPermissions", "true");
+
+                let video = document.getElementById("vid");
+                if ("srcObject" in video) {
+                    video.srcObject = mediaStream;
+                } else {
+                    video.src = window.URL.createObjectURL(mediaStream);
+                }
+                video.addEventListener("loadedmetadata", () => {
+                    video.play();
+                });
+
                 return;
-            }
+            }   
+        }
 
-            mediaDevices.getUserMedia({video: true, 
-                                        audio: false})
-                        .then( (stream) => {
-                            let video = document.getElementById("vid");
-                            if ("srcObject" in video) {
-                                video.srcObject = stream;
-                            } else {
-                                video.src = window.URL.createObjectURL(stream);
-                            }
-                            
-                            video.addEventListener("loadedmetadata", () => {
-                                video.play();
-                            });
-                        })
-                        .catch(alert);
+        const requestCameraPermission = async () => {
+            try {
+                const mediaDevices = navigator.mediaDevices;
+                if (!mediaDevices || !mediaDevices.getUserMedia) {
+                    alert("getUserMedia() not supported.");
+                    return null;
+                }
+                // prompts the user for permission to use a camera
+                return await navigator.mediaDevices.getUserMedia({ 
+                    audio: true,
+                    video: { facingMode: "environment" } //  rear camera
+                 });
+             } catch(ex) {
+                console.error("Camera permission denied:", ex.message);
+                return null;
+            }
+        }
 
 //                         Accessing the phone's front and rear cameras
 
@@ -286,8 +308,6 @@
 // const img = document.createElement('img')
 // img.src = canvas.toDataURL('image/png')
 // screenshotsContainer.prepend(img)
-
-        }
 
         function geoSuccess(position) {
 
