@@ -329,15 +329,16 @@
             // (May also be used to simulate events)
 
             console.log(event.detail);
+            localStorage.removeItem("pictureUri");
 
             const queryParams = {
                 parameters:{
-                  "uploaded_file_name": event.detail
+                  "uploaded_picture_uri": event.detail.pictureUri
                   }
               };
 
             dfMessenger.setQueryParameters(queryParams)   
-            dfMessenger.sendRequest('query','file uploaded');
+            dfMessenger.sendRequest('query', 'picture');
         });
 
         dfMessenger.addEventListener('df-upload-file-selected', async (event) => {
@@ -356,11 +357,15 @@
             reader.onload = async () => {
                 
                 try {
+
+                    // const dataParts = reader.result.split("data:image/jpeg;based64,")
+                    //const dataParts = reader.result.split("base64,");
+
                     const parts = dfMessenger.sessionId.split("dfMessenger-");
                     const data = {
                             session_id: parts[1],
-                            picture_base64: reader.result
-                        }
+                            picture_base64: reader.result,
+                    }
                     const resp = await fetch('https://tlvbox.azurewebsites.net/api/UploadImage', {
                         method: 'POST',
                         headers: {
@@ -368,7 +373,11 @@
                         },
                         body: JSON.stringify(data)
                     });
-                    console.log(resp);
+                    const uri = await resp.text();
+                    console.log(uri);
+
+                    localStorage.setItem("pictureUri", uri);
+                    eventDetail.pictureUri = uri;
 
                     const event = new CustomEvent("df-file-upload-completed", {
                         detail: eventDetail
