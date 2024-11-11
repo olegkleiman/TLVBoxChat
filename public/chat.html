@@ -37,7 +37,7 @@
 </head> 
   
 <body> 
-    <div>Version October 2024 - Omon Ra</div>
+    <div>Version November 2024 - Omon Ra</div>
     <!-- <div hidden id="jwt">ey..</div> -->
     <div id="count">0</div>
     <div id="location">xx,yy</div>
@@ -75,6 +75,8 @@
                 allow-fullscreen="always">
             </df-messenger-chat-bubble>
         </df-messenger>
+        <!-- <input type="file" accept="image/*" class="message-camera" capture="camera" id="camera">s -->
+        <!-- <button onclick="secondScreen()">Second screen</button> -->
         <button id="record" class="message-mic" onclick="openMicrophone()">
             <img alt="Start" id="mic_img" style="border:none;" width="32" height="32" src="https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif" />
         </button>
@@ -89,6 +91,10 @@
     </div>
 
     <script>
+
+        const secondScreen = () => {
+            window.open("https://translate.google.com/")
+        }
 
         // globalThis.dfInstallUtils({
         //     'gcs-bucket-upload': {bucketName: 'tlvbox_picture'},
@@ -238,8 +244,34 @@
         }
 
         document.getElementById('pictureSelector').addEventListener('change', async (event) => {
-            if( e.target.files[0] )
-                console.log(`File selected: ${e.target.files[0]}`)
+            if( event.target.files[0] ) {
+                const file = event.target.files[0];
+                console.log(`File selected: ${file.name}`);
+
+                const reader = new FileReader();
+                reader.onload = async () => {
+                    const parts = dfMessenger.sessionId.split("dfMessenger-");
+                    const data = {
+                            session_id: parts[1],
+                            picture_base64: reader.result
+                        }
+                    const resp = await fetch('https://tlvbox.azurewebsites.net/api/UploadImage', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json', 
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    console.log(resp);
+
+                    const event = new Event("df-file-upload-completed", {
+                        detail: eventDetail
+                    });
+                    dfMessenger.dispatchEvent(event);
+                }
+
+                reader.readAsDataURL(file);
+            }
         });
 
         async function openCamera() {
