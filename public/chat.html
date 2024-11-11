@@ -262,10 +262,11 @@
                         },
                         body: JSON.stringify(data)
                     });
-                    console.log(resp);
+                    const url = await resp.text()
+                    console.log(url);
 
                     const event = new CustomEvent("df-file-upload-completed", {
-                        detail: file
+                        detail: url
                     });
                     dfMessenger.dispatchEvent(event);
                 }
@@ -400,7 +401,7 @@
 
             const queryParams = {
                 parameters:{
-                  "uploaded_file_name": event.detail
+                  "uploaded_picture_uri": event.detail
                   }
               };
 
