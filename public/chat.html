@@ -243,9 +243,9 @@
             location.reload()
         }
 
-        document.getElementById('pictureSelector').addEventListener('change', async (event) => {
-            if( event.target.files[0] ) {
-                const file = event.target.files[0];
+        document.getElementById('pictureSelector').addEventListener('change', async (e) => {
+            if( e.target.files[0] ) {
+                const file = e.target.files[0];
                 console.log(`File selected: ${file.name}`);
 
                 const reader = new FileReader();
@@ -264,8 +264,8 @@
                     });
                     console.log(resp);
 
-                    const event = new Event("df-file-upload-completed", {
-                        detail: eventDetail
+                    const event = new CustomEvent("df-file-upload-completed", {
+                        detail: file
                     });
                     dfMessenger.dispatchEvent(event);
                 }
