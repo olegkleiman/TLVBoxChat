@@ -53,9 +53,6 @@
         <span class="mdc-button__ripple"></span>
         <span class="mdc-button__label">New Session</span>
     </button>
-    <div>
-        <video id="vid"></video>
-    </div>
 
     <div>
         <!-- Using intent='' You can use an event handler that will be called for this event and will produce the first agent message. -->
@@ -75,18 +72,17 @@
                 allow-fullscreen="always">
             </df-messenger-chat-bubble>
         </df-messenger>
-        <!-- <input type="file" accept="image/*" class="message-camera" capture="camera" id="camera">s -->
-        <!-- <button onclick="secondScreen()">Second screen</button> -->
         <button id="record" class="message-mic" onclick="openMicrophone()">
             <img alt="Start" id="mic_img" style="border:none;" width="32" height="32" src="https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif" />
         </button>
         <button id="camera" class="message-camera" onclick="openCamera()">
+            <!-- <button id="camera" class="message-camera" onclick="openCamera()"> -->
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 256 256">
                 <path d="M208,56H180.28L166.65,35.56A8,8,0,0,0,160,32H96a8,8,0,0,0-6.65,3.56L75.71,56H48A24,24,0,0,0,24,80V192a24,24,0,0,0,24,24H208a24,24,0,0,0,24-24V80A24,24,0,0,0,208,56Zm8,136a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V80a8,8,0,0,1,8-8H80a8,8,0,0,0,6.66-3.56L100.28,48h55.43l13.63,20.44A8,8,0,0,0,176,72h32a8,8,0,0,1,8,8ZM128,88a44,44,0,1,0,44,44A44.05,44.05,0,0,0,128,88Zm0,72a28,28,0,1,1,28-28A28,28,0,0,1,128,160Z">
                 </path>
             </svg>
         </button>
-        
+        <input type="file" id="pictureSelector" accept="image/*" class="message-file-input" capture="camera" id="camera">
     </div>
 
     <script>
@@ -242,10 +238,47 @@
             location.reload()
         }
 
+        document.getElementById('pictureSelector').addEventListener('change', async (e) => {
+            if( e.target.files[0] ) {
+                const file = e.target.files[0];
+                console.log(`File selected: ${file.name}`);
+
+                const reader = new FileReader();
+                reader.onload = async () => {
+
+                    const parts = dfMessenger.sessionId.split("dfMessenger-");
+                    const data = {
+                            session_id: parts[1],
+                            picture_base64: reader.result
+                        }
+                    const resp = await fetch('https://tlvbox.azurewebsites.net/api/UploadImage', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json', 
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    if( resp.ok ) {
+                        const url = await resp.text()
+                        console.log(url);
+
+                        const event = new CustomEvent("df-file-upload-completed", {
+                            detail: url
+                        });
+                        dfMessenger.dispatchEvent(event);
+                    } else
+                        console.error("error")
+
+                }
+
+                reader.readAsDataURL(file);
+            }
+        });
+
         async function openCamera() {
 
             const cameraPermissions = localStorage.getItem("cameraPermissions"); 
-            if( !cameraPermissions ) {
+            if( cameraPermissions == null || cameraPermissions === "false" ) {
                 const mediaStream = await requestCameraPermission();
                 
                 if( !mediaStream ) {
@@ -266,7 +299,10 @@
                 });
 
                 return;
-            }   
+            } else {
+                webViewInterface = window.Native
+                webViewInterface.UseCamera();
+            }  
         }
 
         const requestCameraPermission = async () => {
@@ -286,34 +322,6 @@
                 return null;
             }
         }
-
-//                         Accessing the phone's front and rear cameras
-
-// const constraints = {
-//   video: {
-//     width: { ... },
-//     height: { ... },
-//     facingMode: "environment"
-//   },
-// };
-
-// videoStream.getTracks().forEach((track) => {
-//   track.stop()
-// })                        
-            
-// Taking screenshots
-
-// // considering there is a
-// // <canvas id="canvas"></canvas>
-// // tag in the page
-// const canvas = document.querySelector('#canvas')
-// canvas.width = video.videoWidth
-// canvas.height = video.videoHeight
-// canvas.getContext('2d').drawImage(video, 0, 0)
-
-// const img = document.createElement('img')
-// img.src = canvas.toDataURL('image/png')
-// screenshotsContainer.prepend(img)
 
         function geoSuccess(position) {
 
@@ -365,7 +373,7 @@
 
             const queryParams = {
                 parameters:{
-                  "uploaded_file_name": event.detail
+                  "uploaded_picture_uri": event.detail
                   }
               };
 
