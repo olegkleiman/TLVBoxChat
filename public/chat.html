@@ -72,6 +72,8 @@
                 allow-fullscreen="always">
             </df-messenger-chat-bubble>
         </df-messenger>
+        <!-- <input type="file" accept="image/*" class="message-camera" capture="camera" id="camera">s -->
+        <!-- <button onclick="secondScreen()">Second screen</button> -->
         <button id="record" class="message-mic" onclick="openMicrophone()">
             <img alt="Start" id="mic_img" style="border:none;" width="32" height="32" src="https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif" />
         </button>
@@ -86,6 +88,10 @@
     </div>
 
     <script>
+
+        const secondScreen = () => {
+            window.open("https://translate.google.com/")
+        }
 
         const secondScreen = () => {
             window.open("https://translate.google.com/")
