@@ -37,7 +37,7 @@ a:hover {
   z-index: 1000;
   position: fixed;
   bottom: 31px;
-  right: 78px;
+  right: 70px;
   padding: 0;
   border:none;
   background: none;
@@ -46,8 +46,8 @@ a:hover {
 .message-camera {
   z-index: 1000;
   position: fixed;
-  bottom: 35px;
-  right: 116px;
+  bottom: 36px;
+  right: 101px;
   padding: 0;
   border:none;
   background: none;

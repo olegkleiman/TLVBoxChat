@@ -22,7 +22,16 @@
           --df-messenger-message-user-background: #d3e3fd;
           --df-messenger-message-bot-background: #ecf3fe; 
           --df-messenger-input-background: white;
-          --df-messenger-chips-text-wrap: "nowrap"
+          --df-messenger-chips-text-wrap: "nowrap";
+          
+          --df-messenger-send-icon-color-hover: brown;
+          --df-messenger-send-icon-color-active: #0e3bdf;
+          --df-messenger-send-icon-offset-x: -2px;
+          --df-messenger-input-max-width: 86%;
+          --df-messenger-chat-max-width: 100%;
+          --df-messenger-input-padding: 12px 2px 24px 42px;
+          --df-messenger-input-box-padding: 16px 16px;
+
           bottom: 16px;
           right: 16px; 
         }
@@ -40,7 +49,7 @@
 </head> 
   
 <body> 
-    <div>Version November 2024 - Omon Ra</div>
+    <div>Version December 2024 - Omon Ra</div>
     <!-- <div hidden id="jwt">ey..</div> -->
     <div id="count">0</div>
     <div id="location">xx,yy</div>
@@ -72,6 +81,7 @@
                 chat-subtitle="עוזרת אישית"
                 placeholder-text="טקסט חופשי..."
                 chat-title-icon="./assets/img/HAL9001Logo.png"
+                bot-actor-image="./assets/img/HAL9001Logo.png"
                 allow-fullscreen="always">
             </df-messenger-chat-bubble>
         </df-messenger>
@@ -95,7 +105,7 @@
                 </path>
             </svg>
         </button>
-        <button id="start" class="message-start" onclick="reset()">
+        <button id="start" class="message-start" onclick="reset_conversation()">
             <img alt="Start"  width="24" height="24" src="assets/img/start-24.png" />
         </button>
         <input type="file" id="pictureSelector" accept="image/*" class="message-file-input" capture="camera" id="camera">
@@ -377,8 +387,8 @@
         //     dfMessenger.setQueryParameters(queryParams)
         // });
 
-        function reset() {
-            dfMessenger.sendRequest('event', 'restart');    
+        function reset_conversation() {
+            dfMessenger.sendRequest('event', 'reset_conversation');    
         }
         
 
