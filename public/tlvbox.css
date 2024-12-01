@@ -52,6 +52,15 @@ a:hover {
   border:none;
   background: none;
 }
+.message-start {
+  z-index: 1000;
+  position: fixed;
+  bottom: 35px;;
+  right: 200;
+  padding: 0;
+  border:none;
+  background: none;
+}
 
 .message-file-input {
   z-index: 1000;

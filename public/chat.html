@@ -34,6 +34,9 @@
     <script src="https://unpkg.com/jwt-decode@2.0.4/build/jwt-decode.min.js"></script>
     <!-- <script src="https://cdn.jsdelivr.net/gh/arikw/itm-to-wgs84-converter@1/src/index.js"></script> -->
     <link rel="stylesheet" href="./tlvbox.css">
+    <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs"
+        type="module"
+    ></script>
 </head> 
   
 <body> 
@@ -74,8 +77,16 @@
         </df-messenger>
         <!-- <input type="file" accept="image/*" class="message-camera" capture="camera" id="camera">s -->
         <!-- <button onclick="secondScreen()">Second screen</button> -->
+        <dotlottie-player
+            src="https://lottie.host/c0622812-ac4e-4a2f-8678-0f4165553f2f/NAFkq6Fe5M.lottie"
+            background="transparent"
+            speed="1"
+            style="width: 300px; height: 300px"
+            loop
+            autoplay>
+        </dotlottie-player>
         <button id="record" class="message-mic" onclick="openMicrophone()">
-            <img alt="Start" id="mic_img" style="border:none;" width="32" height="32" src="https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif" />
+            <img alt="microphone" id="mic_img" style="border:none;" width="32" height="32" src="https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif" />
         </button>
         <button id="camera" class="message-camera" onclick="openCamera()">
             <!-- <button id="camera" class="message-camera" onclick="openCamera()"> -->
@@ -83,6 +94,9 @@
                 <path d="M208,56H180.28L166.65,35.56A8,8,0,0,0,160,32H96a8,8,0,0,0-6.65,3.56L75.71,56H48A24,24,0,0,0,24,80V192a24,24,0,0,0,24,24H208a24,24,0,0,0,24-24V80A24,24,0,0,0,208,56Zm8,136a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V80a8,8,0,0,1,8-8H80a8,8,0,0,0,6.66-3.56L100.28,48h55.43l13.63,20.44A8,8,0,0,0,176,72h32a8,8,0,0,1,8,8ZM128,88a44,44,0,1,0,44,44A44.05,44.05,0,0,0,128,88Zm0,72a28,28,0,1,1,28-28A28,28,0,0,1,128,160Z">
                 </path>
             </svg>
+        </button>
+        <button id="start" class="message-start" onclick="reset()">
+            <img alt="Start"  width="24" height="24" src="assets/img/start-24.png" />
         </button>
         <input type="file" id="pictureSelector" accept="image/*" class="message-file-input" capture="camera" id="camera">
     </div>
@@ -92,14 +106,6 @@
         const secondScreen = () => {
             window.open("https://translate.google.com/")
         }
-
-        const secondScreen = () => {
-            window.open("https://translate.google.com/")
-        }
-
-        // globalThis.dfInstallUtils({
-        //     'gcs-bucket-upload': {bucketName: 'tlvbox_picture'},
-        // });
 
         const locationDiv = document.getElementById('location');
         const dfMessenger = document.querySelector('df-messenger');
@@ -370,6 +376,11 @@
 
         //     dfMessenger.setQueryParameters(queryParams)
         // });
+
+        function reset() {
+            dfMessenger.sendRequest('event', 'restart');    
+        }
+        
 
         dfMessenger.addEventListener('df-file-upload-completed', function (event) {
             // simulates an end-user input that is normally provided to the agent dialog
