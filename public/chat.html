@@ -74,19 +74,19 @@
             agent-id="46727f85-4983-4edb-b8b1-55df166837da"
             language-code="he-il"
             max-query-length="-1"
-            allow-feedback="all">
+            allow-feedback="all"
+            intent="reset_conversation"
+            url-allowlist="*">
             <df-messenger-chat-bubble
                 expanded="true"
                 chat-title="TLV Box"
                 chat-subtitle="עוזרת אישית"
                 placeholder-text="טקסט חופשי..."
                 chat-title-icon="./assets/img/HAL9001Logo.png"
-                bot-actor-image="./assets/img/HAL9001Logo.png"
                 allow-fullscreen="always">
             </df-messenger-chat-bubble>
         </df-messenger>
-        <!-- <input type="file" accept="image/*" class="message-camera" capture="camera" id="camera">s -->
-        <!-- <button onclick="secondScreen()">Second screen</button> -->
+
         <dotlottie-player
             src="https://lottie.host/c0622812-ac4e-4a2f-8678-0f4165553f2f/NAFkq6Fe5M.lottie"
             background="transparent"
@@ -112,10 +112,6 @@
     </div>
 
     <script>
-
-        const secondScreen = () => {
-            window.open("https://translate.google.com/")
-        }
 
         const locationDiv = document.getElementById('location');
         const dfMessenger = document.querySelector('df-messenger');
@@ -378,7 +374,7 @@
 
         //     const queryParams = {
         //         parameters:{
-        //           "jwt": localStorage.getItem("accessToken");,
+        //           "jwt": localStorage.getItem("accessToken"),
         //           "User_Authorized": "True",
         //           "userId": '313069486',
         //           }
@@ -470,11 +466,17 @@
         window.addEventListener('df-response-received', (event) => {
             console.log(event.detail)
         })
-        // window.addEventListener('df-chip-clicked', async (event) => {
-        //     console.log(event)
-        // })
+
+        // Initialize DF parameters. This should be done
+        // both for the user's utterance and introductory chips.
+        window.addEventListener('df-chip-clicked', async (event) => {
+            init();
+        })
         window.addEventListener('df-user-input-entered', (event) => {
-            
+            init();
+        })
+
+        const init = () => {
             const jwt = localStorage.getItem("accessToken");
 
             try {
@@ -499,9 +501,7 @@
             } catch(ex) {
                 console.log(ex.message)
             }
-
-        
-        })
+        }
         
     </script>
 </body> 

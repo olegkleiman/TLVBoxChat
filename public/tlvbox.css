@@ -55,8 +55,8 @@ a:hover {
 .message-start {
   z-index: 1000;
   position: fixed;
-  bottom: 35px;;
-  right: 200;
+  bottom: 34px;
+  left: 12px;
   padding: 0;
   border:none;
   background: none;
