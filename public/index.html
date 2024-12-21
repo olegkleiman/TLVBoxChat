@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html dir="rtl">
+<html>
 <head>
     <title>TLV Box</title>
     <meta charset="utf-8">
@@ -12,14 +12,31 @@
     <script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"></script>
     <style>
       df-messenger {
-        bottom: 16px;
-        right: 16px;
-        --df-messenger-chat-background: #f3f6fc;
-        --df-messenger-font-color: brown;          
+        /*  direction: rtl; */
+        z-index: 999;
+        position: fixed;
+        --df-messenger-button-titlebar-color: #0a2f79;
+        --df-messenger-font-color: #000;
         --df-messenger-font-family: Google Sans;
         --df-messenger-font-size: 14px;
+        --df-messenger-chat-background: #f3f6fc;
+        --df-messenger-message-user-background: #d3e3fd;
+        --df-messenger-message-bot-background: #ecf3fe; 
+        --df-messenger-input-background: white;
+        --df-messenger-chips-text-wrap: "nowrap";
+        
+        --df-messenger-send-icon-color-hover: brown;
+        --df-messenger-send-icon-color-active: #0e3bdf;
+        --df-messenger-send-icon-offset-x: -2px;
+        --df-messenger-input-max-width: 86%;
+        --df-messenger-chat-max-width: 100%;
+        --df-messenger-input-padding: 12px 2px 24px 42px;
+        --df-messenger-input-box-padding: 16px 16px;
+
+        bottom: 16px;
+        right: 16px; 
       }
-    </style>
+  </style>
 </head>
 <body>
     <div id="app"></div>

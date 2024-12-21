@@ -65,6 +65,9 @@
         <span class="mdc-button__ripple"></span>
         <span class="mdc-button__label">New Session</span>
     </button>
+    <button onclick="playAudio()">
+        <span>Play</span>
+    </button>
 
     <div>
         <!-- Using intent='' You can use an event handler that will be called for this event and will produce the first agent message. -->
@@ -113,6 +116,58 @@
 
     <script>
 
+        // snippet from https://gist.github.com/borismus/1032746
+        function convertDataURIToBinary(base64) {
+            var raw = window.atob(base64);
+            var rawLength = raw.length;
+
+            var array = new Uint8Array(new ArrayBuffer(rawLength));
+
+            for(i = 0; i < rawLength; i++) {
+                array[i] = raw.charCodeAt(i);
+            }
+            return array;
+        }
+
+        async function playAudio() {
+
+            const data = {
+                input: {
+                  "text": "שלום, להלן תוצאות הפניה"  
+                },
+                voice: {
+                    languageCode: "he-IL",
+                    ssmlGender: "NEUTRAL"
+                },
+                audioConfig: {
+                    audioEncoding: "OGG_OPUS"
+                }                        
+            }
+
+            const resp = await fetch("https://texttospeech.googleapis.com/v1beta1/text:synthesize?key=AIzaSyD46S1rlK7t8SHSmp0M1z9FMrUu7sRKfEE", {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                }
+            )
+
+            if( resp.ok ) {
+                const synthResponse = await resp.json()
+                const oggBase64 = synthResponse.audioContent
+                
+                // Convert the syntesation resut into pure binary form
+                var binaryAudioData = convertDataURIToBinary(oggBase64)
+
+                var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const source = audioCtx.createBufferSource();
+
+                audioCtx.decodeAudioData(binaryAudioData.buffer.slice(0), function(buffer) {
+                    source.buffer = buffer;
+                    source.connect(audioCtx.destination);
+                    source.start();
+                })
+            }
+        }
+
         const locationDiv = document.getElementById('location');
         const dfMessenger = document.querySelector('df-messenger');
         const micButton = document.getElementById('record');
@@ -121,7 +176,11 @@
         var currentVoice;
         const countDiv = document.getElementById("count");
 
-        const recognition = new webkitSpeechRecognition();
+        const recognition = new (window.webkitSpeechRecognition || 
+            window.webkitSpeechRecognition ||
+            window.mozSpeechRecognition ||
+            window.msSpeechRecognition)();
+
         recognition.lang = 'he-IL';
         recognition.continuous = false; // when the user stops talking, speech recognition will end.
         recognition.interimResults = false; // only results returned by the recognizer are final and will not change. 
