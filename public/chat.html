@@ -65,7 +65,7 @@
         <span class="mdc-button__ripple"></span>
         <span class="mdc-button__label">New Session</span>
     </button>
-    <button onclick="playAudio()">
+    <button onclick="playAudio('שָׁלוֹם, אֲנִי הָעוֹזֶרֶת הָאִישִּׁית שֶׁלְּך')">
         <span>Play</span>
     </button>
 
@@ -129,15 +129,15 @@
             return array;
         }
 
-        async function playAudio() {
+        async function playAudio(audioText) {
 
             const data = {
                 input: {
-                  "text": "שלום, להלן תוצאות הפניה"  
+                  "text": audioText
                 },
                 voice: {
                     languageCode: "he-IL",
-                    ssmlGender: "NEUTRAL"
+                    ssmlGender: "FEMALE"
                 },
                 audioConfig: {
                     audioEncoding: "OGG_OPUS"
@@ -151,6 +151,7 @@
             )
 
             if( resp.ok ) {
+               
                 const synthResponse = await resp.json()
                 const oggBase64 = synthResponse.audioContent
                 
@@ -207,25 +208,28 @@
             dfMessenger.renderCustomText(transcript);
             dfMessenger.sendQuery(transcript, false);
 
-            if ('speechSynthesis' in window) {
-                let utterance = new SpeechSynthesisUtterance(transcript);
-                window.speechSynthesis.onvoiceschanged = () => {
-                    var voices = window.speechSynthesis.getVoices();
-                    currentVoice = voices[0];
-                    utterance.voice = voices[0];
-                    utterance.pitch = 1
-                    utterance.rate = 0.5
-                    speechSynthesis.speak(utterance)
-                };
-                utterance.onend = function (event) {
-                    console.log("SpeechSynthesisUtterance.onend");
-                };
-                utterance.onerror = function (event) {
-                    console.error("SpeechSynthesisUtterance.onerror");
-                };
-                utterance.voice = currentVoice;
-                speechSynthesis.speak(utterance)
-            }
+            // if ('speechSynthesis' in window) {
+            //     let utterance = new SpeechSynthesisUtterance(transcript);
+            //     window.speechSynthesis.onvoiceschanged = () => {
+            //         var voices = window.speechSynthesis.getVoices();
+            //         currentVoice = voices[0];
+            //         utterance.voice = voices[0];
+            //         utterance.pitch = 1
+            //         utterance.rate = 0.5
+            //         speechSynthesis.speak(utterance)
+            //     };
+            //     utterance.onend = function (event) {
+            //         console.log("SpeechSynthesisUtterance.onend");
+            //     };
+            //     utterance.onerror = function (event) {
+            //         console.error("SpeechSynthesisUtterance.onerror");
+            //     };
+            //     utterance.voice = currentVoice;
+            //     speechSynthesis.speak(utterance)
+            // }
+            // else {
+                playAudio(transcript);
+            // }
         }
 
         const projectId = 'muni-tlv';
@@ -524,7 +528,10 @@
             console.log('Request', event.detail.data.requestBody);
         });
         window.addEventListener('df-response-received', (event) => {
+            const audioText = event.detail.messages[0].richElements[0].text[0];
             console.log(event.detail)
+            playAudio(audioText);
+
         })
 
         // Initialize DF parameters. This should be done
