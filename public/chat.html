@@ -519,10 +519,16 @@
             console.log('Request', event.detail.data.requestBody);
         });
         window.addEventListener('df-response-received', (event) => {
-            const audioText = event.detail.messages[0].richElements[0].text[0];
-            console.log(event.detail)
-            playAudio(audioText);
 
+            console.log(event.detail)
+            
+            var audioText = "";
+            if( event.detail.messages[0].richElements )
+                audioText = event.detail.messages[0].richElements[0].text[0];
+            else
+                audioText = event.detail.messages[0].text;
+            
+            playAudio(audioText);
         })
 
         // Initialize DF parameters. This should be done
