@@ -65,8 +65,13 @@
         <span class="mdc-button__ripple"></span>
         <span class="mdc-button__label">New Session</span>
     </button>
+    <br />
     <button onclick="playAudio('שָׁלוֹם, אֲנִי הָעוֹזֶרֶת הָאִישִּׁית. אפשר לשאול אותי על כל דבר שקורה בעיר תל-אביב. איך אוכל לסייע?')">
         <span>Play</span>
+    </button>
+    <br />
+    <button onclick="playAudioStream('שָׁלוֹם')"">
+        <span>Play Chat</span>
     </button>
 
     <div>
@@ -116,6 +121,10 @@
 
     <script>
 
+        function string2bytes() {
+            
+        }
+
         // snippet from https://gist.github.com/borismus/1032746
         function convertDataURIToBinary(base64) {
             var raw = window.atob(base64);
@@ -127,6 +136,26 @@
                 array[i] = raw.charCodeAt(i);
             }
             return array;
+        }
+
+        async function playAudioStream() {
+
+            const data = {
+                  "prompt": "שלום",
+                  "sessionid": ""
+            }
+
+            const resp = await fetch("http://localhost:7079/api/Chat", {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+            })
+            if( resp.ok ) {
+                const chatResponse = await resp.json()
+                const strAudioContent = chatResponse.audioContent;
+
+                const binaryAudioData = string2bytes(strAudioContent);
+                playRawAudioData(binaryAudioData);
+            }   
         }
 
         async function playAudio(audioText) {
@@ -145,7 +174,7 @@
                 const synthResponse = await resp.json()
                 const oggBase64 = synthResponse.audioContent
                 
-                // Convert the syntesation resut into pure binary form
+                // Convert the synthesation resut into pure binary form
                 var binaryAudioData = convertDataURIToBinary(oggBase64)
                 playRawAudioData(binaryAudioData);
             }
