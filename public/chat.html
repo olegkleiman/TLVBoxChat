@@ -121,10 +121,6 @@
 
     <script>
 
-        function string2bytes() {
-            
-        }
-
         // snippet from https://gist.github.com/borismus/1032746
         function convertDataURIToBinary(base64) {
             var raw = window.atob(base64);
@@ -153,7 +149,8 @@
                 const chatResponse = await resp.json()
                 const strAudioContent = chatResponse.audioContent;
 
-                const binaryAudioData = string2bytes(strAudioContent);
+                let utf8Encode = new TextEncoder();
+                const binaryAudioData = utf8Encode.encode(strAudioContent);
                 playRawAudioData(binaryAudioData);
             }   
         }
