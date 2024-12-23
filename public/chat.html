@@ -65,8 +65,17 @@
         <span class="mdc-button__ripple"></span>
         <span class="mdc-button__label">New Session</span>
     </button>
+<<<<<<< HEAD
     <button onclick="playAudio()">
+=======
+    <br />
+    <button onclick="playAudio('שָׁלוֹם, אֲנִי הָעוֹזֶרֶת הָאִישִּׁית. אפשר לשאול אותי על כל דבר שקורה בעיר תל-אביב. איך אוכל לסייע?')">
+>>>>>>> 83b6aad07f73bc8d35525fdd13372292eeb44f05
         <span>Play</span>
+    </button>
+    <br />
+    <button onclick="playAudioStream('שָׁלוֹם')"">
+        <span>Play Chat</span>
     </button>
 
     <div>
@@ -129,6 +138,7 @@
             return array;
         }
 
+<<<<<<< HEAD
         async function playAudio() {
 
             const data = {
@@ -142,30 +152,65 @@
                 audioConfig: {
                     audioEncoding: "OGG_OPUS"
                 }                        
+=======
+        async function playAudioStream() {
+
+            const data = {
+                  "prompt": "שלום",
+                  "sessionid": ""
             }
 
-            const resp = await fetch("https://texttospeech.googleapis.com/v1beta1/text:synthesize?key=AIzaSyD46S1rlK7t8SHSmp0M1z9FMrUu7sRKfEE", {
+            const jwt = localStorage.getItem("accessToken");
+            const resp = await fetch("http://localhost:7079/api/Chat", {
+                    method: 'POST',
+                    headers: {
+                        "Authorization" : jwt
+                    },
+                    body: JSON.stringify(data)
+            })
+            if( resp.ok ) {
+                const chatResponse = await resp.json()
+                const strAudioContent = chatResponse.audioContent;
+
+                let utf8Encode = new TextEncoder();
+                const binaryAudioData = utf8Encode.encode(strAudioContent);
+                playRawAudioData(binaryAudioData);
+            }   
+        }
+
+        async function playAudio(audioText) {
+
+            const data = {
+                  "text": audioText
+>>>>>>> 83b6aad07f73bc8d35525fdd13372292eeb44f05
+            }
+
+            const resp = await fetch("https://tlvbox.azurewebsites.net/api/t2s", {
                     method: 'POST',
                     body: JSON.stringify(data)
-                }
-            )
+            })
 
             if( resp.ok ) {
                 const synthResponse = await resp.json()
                 const oggBase64 = synthResponse.audioContent
                 
-                // Convert the syntesation resut into pure binary form
+                // Convert the synthesation resut into pure binary form
                 var binaryAudioData = convertDataURIToBinary(oggBase64)
-
-                var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const source = audioCtx.createBufferSource();
-
-                audioCtx.decodeAudioData(binaryAudioData.buffer.slice(0), function(buffer) {
-                    source.buffer = buffer;
-                    source.connect(audioCtx.destination);
-                    source.start();
-                })
+                playRawAudioData(binaryAudioData);
             }
+        }
+
+        function playRawAudioData(binaryAudioData) {
+
+            var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+            const source = audioCtx.createBufferSource();
+
+            audioCtx.decodeAudioData(binaryAudioData.buffer.slice(0), function(buffer) {
+                source.buffer = buffer;
+                source.connect(audioCtx.destination);
+                source.start();
+            })       
         }
 
         const locationDiv = document.getElementById('location');
@@ -207,6 +252,7 @@
             dfMessenger.renderCustomText(transcript);
             dfMessenger.sendQuery(transcript, false);
 
+<<<<<<< HEAD
             if ('speechSynthesis' in window) {
                 let utterance = new SpeechSynthesisUtterance(transcript);
                 window.speechSynthesis.onvoiceschanged = () => {
@@ -226,6 +272,30 @@
                 utterance.voice = currentVoice;
                 speechSynthesis.speak(utterance)
             }
+=======
+            // if ('speechSynthesis' in window) {
+            //     let utterance = new SpeechSynthesisUtterance(transcript);
+            //     window.speechSynthesis.onvoiceschanged = () => {
+            //         var voices = window.speechSynthesis.getVoices();
+            //         currentVoice = voices[0];
+            //         utterance.voice = voices[0];
+            //         utterance.pitch = 1
+            //         utterance.rate = 0.5
+            //         speechSynthesis.speak(utterance)
+            //     };
+            //     utterance.onend = function (event) {
+            //         console.log("SpeechSynthesisUtterance.onend");
+            //     };
+            //     utterance.onerror = function (event) {
+            //         console.error("SpeechSynthesisUtterance.onerror");
+            //     };
+            //     utterance.voice = currentVoice;
+            //     speechSynthesis.speak(utterance)
+            // }
+            // else {
+            //   playAudio(transcript);
+            // }
+>>>>>>> 83b6aad07f73bc8d35525fdd13372292eeb44f05
         }
 
         const projectId = 'muni-tlv';
@@ -524,7 +594,20 @@
             console.log('Request', event.detail.data.requestBody);
         });
         window.addEventListener('df-response-received', (event) => {
+<<<<<<< HEAD
             console.log(event.detail)
+=======
+
+            console.log(event.detail)
+
+            var audioText = "";
+            if( event.detail.messages[0].richElements )
+                audioText = event.detail.messages[0].richElements[0].text[0];
+            else
+                audioText = event.detail.messages[0].text;
+            
+            playAudio(audioText);
+>>>>>>> 83b6aad07f73bc8d35525fdd13372292eeb44f05
         })
 
         // Initialize DF parameters. This should be done
