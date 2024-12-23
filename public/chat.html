@@ -65,7 +65,7 @@
         <span class="mdc-button__ripple"></span>
         <span class="mdc-button__label">New Session</span>
     </button>
-    <button onclick="playAudio('שָׁלוֹם, אֲנִי הָעוֹזֶרֶת הָאִישִּׁית שֶׁלְּך')">
+    <button onclick="playAudio('שָׁלוֹם, אֲנִי הָעוֹזֶרֶת הָאִישִּׁית. אפשר לשאול אותי על כל דבר שקורה בעיר תל-אביב. איך אוכל לסייע?')">
         <span>Play</span>
     </button>
 
@@ -132,19 +132,10 @@
         async function playAudio(audioText) {
 
             const data = {
-                input: {
                   "text": audioText
-                },
-                voice: {
-                    languageCode: "he-IL",
-                    ssmlGender: "FEMALE"
-                },
-                audioConfig: {
-                    audioEncoding: "OGG_OPUS"
-                }                        
             }
 
-            const resp = await fetch("https://texttospeech.googleapis.com/v1beta1/text:synthesize?key=AIzaSyD46S1rlK7t8SHSmp0M1z9FMrUu7sRKfEE", {
+            const resp = await fetch("https://tlvbox.azurewebsites.net/api/t2s", {
                     method: 'POST',
                     body: JSON.stringify(data)
                 }
