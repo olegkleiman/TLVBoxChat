@@ -141,8 +141,12 @@
                   "sessionid": ""
             }
 
+            const jwt = localStorage.getItem("accessToken");
             const resp = await fetch("http://localhost:7079/api/Chat", {
                     method: 'POST',
+                    headers: {
+                        "Authorization" : jwt
+                    },
                     body: JSON.stringify(data)
             })
             if( resp.ok ) {
