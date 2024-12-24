@@ -70,7 +70,7 @@
         <span>Play</span>
     </button>
     <br />
-    <button onclick="playAudioStream('שָׁלוֹם')"">
+    <button onclick="playAudioStream('מה זה אוטותל')">
         <span>Play Chat</span>
     </button>
 
@@ -122,7 +122,7 @@
     <script>
 
         // snippet from https://gist.github.com/borismus/1032746
-        function convertDataURIToBinary(base64) {
+        function convertToBinary(base64) {
             var raw = window.atob(base64);
             var rawLength = raw.length;
 
@@ -134,10 +134,10 @@
             return array;
         }
 
-        async function playAudioStream() {
+        async function playAudioStream(text) {
 
             const data = {
-                  "prompt": "שלום",
+                  "prompt": text,
                   "sessionid": ""
             }
 
@@ -151,10 +151,9 @@
             })
             if( resp.ok ) {
                 const chatResponse = await resp.json()
-                const strAudioContent = chatResponse.audioContent;
+                const base64AudioContent = chatResponse.audioContent;
 
-                let utf8Encode = new TextEncoder();
-                const binaryAudioData = utf8Encode.encode(strAudioContent);
+                const binaryAudioData = convertToBinary(base64AudioContent);
                 playRawAudioData(binaryAudioData);
             }   
         }
@@ -176,7 +175,7 @@
                 const oggBase64 = synthResponse.audioContent
                 
                 // Convert the synthesation resut into pure binary form
-                var binaryAudioData = convertDataURIToBinary(oggBase64)
+                var binaryAudioData = convertToBinary(oggBase64)
                 playRawAudioData(binaryAudioData);
             }
         }
