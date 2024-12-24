@@ -65,12 +65,8 @@
         <span class="mdc-button__ripple"></span>
         <span class="mdc-button__label">New Session</span>
     </button>
-<<<<<<< HEAD
-    <button onclick="playAudio()">
-=======
     <br />
     <button onclick="playAudio('שָׁלוֹם, אֲנִי הָעוֹזֶרֶת הָאִישִּׁית. אפשר לשאול אותי על כל דבר שקורה בעיר תל-אביב. איך אוכל לסייע?')">
->>>>>>> 83b6aad07f73bc8d35525fdd13372292eeb44f05
         <span>Play</span>
     </button>
     <br />
@@ -139,22 +135,6 @@
         }
 
         async function playAudioStream(text) {
-<<<<<<< HEAD
-        async function playAudio() {
-
-            const data = {
-                input: {
-                  "text": "שלום. להלן תוצאות הקריאה. יש לך 3 דוחות חניה לשלם. בשביל לבצע תשלום אמור כן"
-                },
-                voice: {
-                    languageCode: "he-IL",
-                    ssmlGender: "FEMALE"
-                },
-                audioConfig: {
-                    audioEncoding: "OGG_OPUS"
-                }                        
-=======
-        async function playAudioStream() {
 
             const data = {
                   "prompt": text,
@@ -182,7 +162,6 @@
 
             const data = {
                   "text": audioText
->>>>>>> 83b6aad07f73bc8d35525fdd13372292eeb44f05
             }
 
             const resp = await fetch("https://tlvbox.azurewebsites.net/api/t2s", {
@@ -252,27 +231,6 @@
             dfMessenger.renderCustomText(transcript);
             dfMessenger.sendQuery(transcript, false);
 
-<<<<<<< HEAD
-            if ('speechSynthesis' in window) {
-                let utterance = new SpeechSynthesisUtterance(transcript);
-                window.speechSynthesis.onvoiceschanged = () => {
-                    var voices = window.speechSynthesis.getVoices();
-                    currentVoice = voices[0];
-                    utterance.voice = voices[0];
-                    utterance.pitch = 1
-                    utterance.rate = 0.5
-                    speechSynthesis.speak(utterance)
-                };
-                utterance.onend = function (event) {
-                    console.log("SpeechSynthesisUtterance.onend");
-                };
-                utterance.onerror = function (event) {
-                    console.error("SpeechSynthesisUtterance.onerror");
-                };
-                utterance.voice = currentVoice;
-                speechSynthesis.speak(utterance)
-            }
-=======
             // if ('speechSynthesis' in window) {
             //     let utterance = new SpeechSynthesisUtterance(transcript);
             //     window.speechSynthesis.onvoiceschanged = () => {
@@ -295,7 +253,7 @@
             // else {
             //   playAudio(transcript);
             // }
->>>>>>> 83b6aad07f73bc8d35525fdd13372292eeb44f05
+
         }
 
         const projectId = 'muni-tlv';
@@ -594,10 +552,6 @@
             console.log('Request', event.detail.data.requestBody);
         });
         window.addEventListener('df-response-received', (event) => {
-<<<<<<< HEAD
-            console.log(event.detail)
-=======
-
             console.log(event.detail)
 
             var audioText = "";
@@ -607,7 +561,6 @@
                 audioText = event.detail.messages[0].text;
             
             playAudio(audioText);
->>>>>>> 83b6aad07f73bc8d35525fdd13372292eeb44f05
         })
 
         // Initialize DF parameters. This should be done
