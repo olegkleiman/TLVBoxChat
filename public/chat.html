@@ -46,6 +46,7 @@
     <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs"
         type="module"
     ></script>
+    <script src="./scripts/sse.js" type="module"></script>
 </head> 
   
 <body> 
@@ -72,6 +73,10 @@
     <br />
     <button onclick="playAudioStream('מה זה אוטותל')">
         <span>Play Chat</span>
+    </button>
+    <br />
+    <button onclick="processSSE()">
+        <span>Get SSE</span>
     </button>
 
     <div>
@@ -121,6 +126,31 @@
 
     <script>
 
+        //import { SSE } from './sse.js';
+        
+        function processSSE(){
+
+            const url = 'http://localhost:7079/api/chunk'
+            var evtSource = new SSE(url, {
+                headers: {'Content-Type': 'text/plain'},
+                payload: {
+                    prompt: 'Hi',
+                    sessionid: ''
+                }
+            });
+            source.addEventListener('message', function(e) {
+                var payload = JSON.parse(e.data);
+                console.log(payload);
+            });
+
+            // const evtSource = new EventSource("http://localhost:7079/api/chunk", {
+            //     withCredentials: true
+            // });
+            // evtSource.onmessage = (e) => {
+            //     console.log(e.data);
+            // }
+        }
+
         // snippet from https://gist.github.com/borismus/1032746
         function convertToBinary(base64) {
             var raw = window.atob(base64);
@@ -142,7 +172,7 @@
             }
 
             const jwt = localStorage.getItem("accessToken");
-            const resp = await fetch("http://localhost:7079/api/Chat", {
+            const resp = await fetch("http://localhost:7079/api/chat_s", {
                     method: 'POST',
                     headers: {
                         "Authorization" : jwt
