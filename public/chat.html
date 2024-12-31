@@ -9,6 +9,7 @@
     <meta charset="UTF-8" />
     <title>עוזרת אישית - עיריית ת"א</title>
     <link rel="shortcut icon" type="image/png" sizes="32x32" href="https://www.tel-aviv.gov.il/_layouts/15/TlvSP2013PublicSite/Images/IriaFavIcon.ico" />
+    <audio id="audioPing" preload="metadata" src="https://widget-v4.tidiochat.com//tururu.mp3"></audio>
     <style>
         df-messenger {
           /*  direction: rtl; */
@@ -48,6 +49,7 @@
     ></script>
     <script src="./scripts/sse.js" type="module"></script>
     <script src="./scripts/audio.js"></script>
+    <script src="//code.tidio.co/atkjjchaog0alq7hm0arjrh2pnzzbuwl.js" async></script>
 </head> 
   
 <body> 
@@ -523,6 +525,7 @@
         });
         window.addEventListener('df-request-sent', (event) => {
             console.log('Request', event.detail.data.requestBody);
+            document.getElementById('audioPing').play();
         });
         window.addEventListener('df-response-received', (event) => {
             console.log(event.detail)
