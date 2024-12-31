@@ -47,6 +47,7 @@
         type="module"
     ></script>
     <script src="./scripts/sse.js" type="module"></script>
+    <script src="./scripts/audio.js"></script>
 </head> 
   
 <body> 
@@ -130,7 +131,7 @@
         
         function processSSE(){
 
-            const url = 'http://localhost:7079/api/chunk'
+            const url = 'http://localhost:7079/api/chat.stream'
             var evtSource = new SSE(url, {
                 headers: {'Content-Type': 'text/plain'},
                 payload: {
@@ -162,64 +163,6 @@
                 array[i] = raw.charCodeAt(i);
             }
             return array;
-        }
-
-        async function playAudioStream(text) {
-
-            const data = {
-                  "prompt": text,
-                  "sessionid": ""
-            }
-
-            const jwt = localStorage.getItem("accessToken");
-            const resp = await fetch("http://localhost:7079/api/chat_s", {
-                    method: 'POST',
-                    headers: {
-                        "Authorization" : jwt
-                    },
-                    body: JSON.stringify(data)
-            })
-            if( resp.ok ) {
-                const chatResponse = await resp.json()
-                const base64AudioContent = chatResponse.audioContent;
-
-                const binaryAudioData = convertToBinary(base64AudioContent);
-                playRawAudioData(binaryAudioData);
-            }   
-        }
-
-        async function playAudio(audioText) {
-
-            const data = {
-                  "text": audioText
-            }
-
-            const resp = await fetch("https://tlvbox.azurewebsites.net/api/t2s", {
-                    method: 'POST',
-                    body: JSON.stringify(data)
-            })
-
-            if( resp.ok ) {
-                const synthResponse = await resp.json()
-                const oggBase64 = synthResponse.audioContent
-                
-                // Convert the synthesation resut into pure binary form
-                var binaryAudioData = convertToBinary(oggBase64)
-                playRawAudioData(binaryAudioData);
-            }
-        }
-
-        function playRawAudioData(binaryAudioData) {
-
-            var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-            const source = audioCtx.createBufferSource();
-
-            audioCtx.decodeAudioData(binaryAudioData.buffer.slice(0), function(buffer) {
-                source.buffer = buffer;
-                source.connect(audioCtx.destination);
-                source.start();
-            })       
         }
 
         const locationDiv = document.getElementById('location');
@@ -590,7 +533,8 @@
             else
                 audioText = event.detail.messages[0].text;
             
-            playAudio(audioText);
+            if( audioText )
+                playAudio(audioText);
         })
 
         // Initialize DF parameters. This should be done
