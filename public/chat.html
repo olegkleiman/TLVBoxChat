@@ -9,14 +9,62 @@
     <meta charset="UTF-8" />
     <title>עוזרת אישית - עיריית ת"א</title>
     <link rel="shortcut icon" type="image/png" sizes="32x32" href="https://www.tel-aviv.gov.il/_layouts/15/TlvSP2013PublicSite/Images/IriaFavIcon.ico" />
-    <audio id="audioPing" preload="metadata" src="https://widget-v4.tidiochat.com//tururu.mp3"></audio>
     <style>
+
+
+        :root{
+            direction: rtl;
+        }
         df-messenger {
           /*  direction: rtl; */
           z-index: 999;
           position: fixed;
-          --df-messenger-button-titlebar-color: #0a2f79;
-          --df-messenger-font-color: #000;
+
+            /* Bot messages */
+            --df-messenger-message-bot-background: rgb(214, 203, 237);
+          /* --df-messenger-message-bot-background: linear-gradient(135deg, rgb(42, 39, 218), rgb(0, 204, 255)); */
+          --df-messenger-message-bot-border-bottom-right-radius: 20px;
+          --df-messenger-message-bot-border-bottom-left-radius: 20px;
+          --df-messenger-message-bot-border-top-right-radius: 20px;
+          --df-messenger-message-bot-border-top-left-radius: 20px;
+
+          --df-messenger-message-bot-margin-left: 30px;
+   
+          --df-messenger-message-bot-stack-border-bottom-left-radius: 100px;
+          --df-messenger-message-group-padding: 80px;
+          --df-messenger-message-bot-group-background: rgb(228, 221, 227);
+          --df-messenger-chat-padding: 100px;
+          
+          /* --df-messenger-chat-background-color: green; */
+          /* --df-messenger-send-icon: #f8c615; */
+
+          --df-messenger-message-user-align: flex-start;
+          --df-messenger-message-bot-align: flex-end;
+
+          /* Bot chips */
+          --df-messenger-chips-background-color: var(--df-messenger-message-bot-background);
+          --df-messenger-chips-border-color: rgb(42, 39, 218);
+          --df-messenger-chips-border-radius: 12px;
+          --df-messenger-chips-box-shadow: 12px 2px 2px 0 rgba(0, 0, 0, 0.24);
+          /* --df-messenger-chips-background-hover: var(--df-messenger-message-bot-background); */
+          --df-messenger-chips-hover-background-color: white;
+
+          /* User messages */
+          /* --df-messenger-message-user-border: 1px solid rgb(42, 39, 218); */
+          --df-messenger-message-user-group-background: rgb(225, 67, 67);
+
+          --df-messenger-message-user-background: linear-gradient(135deg, rgb(42, 39, 218), rgb(0, 204, 255));
+          --df-messenger-message-user-border-bottom-right-radius: 20px;
+          --df-messenger-message-user-border-bottom-left-radius: 20px;
+          --df-messenger-message-user-border-top-right-radius: 20px;
+          --df-messenger-message-user-border-top-left-radius: 20px;
+          --df-messenger-message-user-font-color: rgb(255, 255, 255);
+          --df-messenger-message-user-font-weight:var(--df-messenger-bot-message);
+
+          /* --df-messenger-bot-message: red; */
+          /* --df-messenger-chat-background-color: #fafafa; */
+          /* --df-messenger-button-titlebar-color: #0a2f79; */
+          /*--df-messenger-font-color: #000;
           --df-messenger-font-family: Google Sans;
           --df-messenger-font-size: 14px;
           --df-messenger-chat-background: #f3f6fc;
@@ -27,17 +75,24 @@
           
           --df-messenger-send-icon-color-hover: brown;
           --df-messenger-send-icon-color-active: #0e3bdf;
+          */
           --df-messenger-send-icon-offset-x: -2px;
           --df-messenger-input-max-width: 86%;
-          --df-messenger-chat-max-width: 100%;
+          --df-messenger-chat-max-width: 100%; 
           --df-messenger-input-padding: 12px 2px 24px 42px;
           --df-messenger-input-box-padding: 16px 16px;
 
           bottom: 16px;
           right: 16px; 
         }
+
+        df-messenger-user-input {
+            direction: rtl;            
+        }
+
     </style>
-    <link rel="stylesheet" href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css">    
+    <link rel="stylesheet" href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css">
+
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"> 
     <link rel="stylesheet" href="./tlvbox.css">
     <script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"></script>
@@ -47,9 +102,7 @@
     <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs"
         type="module"
     ></script>
-    <script src="./scripts/sse.js" type="module"></script>
-    <script src="./scripts/audio.js"></script>
-    <script src="//code.tidio.co/atkjjchaog0alq7hm0arjrh2pnzzbuwl.js" async></script>
+    <script src="//code.tidio.co/xqutuowskd5e5uobkcgemtc4l2iq2aio.js" async></script>
 </head> 
   
 <body> 
@@ -74,12 +127,8 @@
         <span>Play</span>
     </button>
     <br />
-    <button onclick="playAudioStream('מה זה אוטותל')">
+    <button onclick="playAudioStream('שָׁלוֹם')">
         <span>Play Chat</span>
-    </button>
-    <br />
-    <button onclick="processSSE()">
-        <span>Get SSE</span>
     </button>
 
     <div>
@@ -129,33 +178,8 @@
 
     <script>
 
-        //import { SSE } from './sse.js';
-        
-        function processSSE(){
-
-            const url = 'http://localhost:7079/api/chat.stream'
-            var evtSource = new SSE(url, {
-                headers: {'Content-Type': 'text/plain'},
-                payload: {
-                    prompt: 'Hi',
-                    sessionid: ''
-                }
-            });
-            source.addEventListener('message', function(e) {
-                var payload = JSON.parse(e.data);
-                console.log(payload);
-            });
-
-            // const evtSource = new EventSource("http://localhost:7079/api/chunk", {
-            //     withCredentials: true
-            // });
-            // evtSource.onmessage = (e) => {
-            //     console.log(e.data);
-            // }
-        }
-
         // snippet from https://gist.github.com/borismus/1032746
-        function convertToBinary(base64) {
+        function convertDataURIToBinary(base64) {
             var raw = window.atob(base64);
             var rawLength = raw.length;
 
@@ -165,6 +189,65 @@
                 array[i] = raw.charCodeAt(i);
             }
             return array;
+        }
+
+        async function playAudioStream() {
+
+            const data = {
+                  "prompt": "שלום",
+                  "sessionid": ""
+            }
+
+            const jwt = localStorage.getItem("accessToken");
+            const resp = await fetch("http://localhost:7079/api/Chat", {
+                    method: 'POST',
+                    headers: {
+                        "Authorization" : jwt
+                    },
+                    body: JSON.stringify(data)
+            })
+            if( resp.ok ) {
+                const chatResponse = await resp.json()
+                const strAudioContent = chatResponse.audioContent;
+
+                let utf8Encode = new TextEncoder();
+                const binaryAudioData = utf8Encode.encode(strAudioContent);
+                playRawAudioData(binaryAudioData);
+            }   
+        }
+
+        async function playAudio(audioText) {
+
+            const data = {
+                  "text": audioText
+            }
+
+            const resp = await fetch("https://tlvbox.azurewebsites.net/api/t2s", {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+            })
+
+            if( resp.ok ) {
+                const synthResponse = await resp.json()
+                const oggBase64 = synthResponse.audioContent
+                
+                // Convert the synthesation resut into pure binary form
+                var binaryAudioData = convertDataURIToBinary(oggBase64)
+                playRawAudioData(binaryAudioData);
+            }
+        }
+
+        function playRawAudioData(binaryAudioData) {
+
+            var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+            const source = audioCtx.createBufferSource();
+
+            audioCtx.decodeAudioData(binaryAudioData.buffer.slice(0), function(buffer) {
+                source.buffer = buffer;
+                source.connect(audioCtx.destination);
+                source.start();
+            })       
         }
 
         const locationDiv = document.getElementById('location');
@@ -228,7 +311,6 @@
             // else {
             //   playAudio(transcript);
             // }
-
         }
 
         const projectId = 'muni-tlv';
@@ -525,9 +607,9 @@
         });
         window.addEventListener('df-request-sent', (event) => {
             console.log('Request', event.detail.data.requestBody);
-            document.getElementById('audioPing').play();
         });
         window.addEventListener('df-response-received', (event) => {
+
             console.log(event.detail)
 
             var audioText = "";
@@ -536,8 +618,7 @@
             else
                 audioText = event.detail.messages[0].text;
             
-            if( audioText )
-                playAudio(audioText);
+            playAudio(audioText);
         })
 
         // Initialize DF parameters. This should be done
@@ -579,4 +660,4 @@
     </script>
 </body> 
   
-</html>  
+</html>
