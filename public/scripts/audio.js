@@ -59,7 +59,7 @@ const stopRecording = () => {
     }
 }
 
-async function playAudio(audioText) {
+function playAudio (audioText) {
 
     const synth = window.speechSynthesis;
 
@@ -68,30 +68,33 @@ async function playAudio(audioText) {
     const filteredVoices = voices.filter(voice => voice.lang === "he-IL");
     utterThis.lang = 'he-IL';
     utterThis.voice = filteredVoices[0];
-    utterThis.pitch = 1.0; // pitch.value;
-    utterThis.rate = 1.0; //rate.value;
+    utterThis.pitch = 1.0; 
+    utterThis.rate = 1.0;
     synth.speak(utterThis);
-
-    // const data = {
-    //       "text": audioText
-    // }
-
-    // const resp = await fetch("https://tlvbox.azurewebsites.net/api/t2s", {
-    //         method: 'POST',
-    //         body: JSON.stringify(data)
-    // })
-
-    // if( resp.ok ) {
-    //     const synthResponse = await resp.json()
-    //     const oggBase64 = synthResponse.audioContent
-        
-    //     // Convert the synthesation resut into pure binary form
-    //     var binaryAudioData = convertToBinary(oggBase64)
-    //     playRawAudioData(binaryAudioData);
-    // }
 }
 
-async function playAudioStream(text) {
+async function synthesizeAudio(text) {
+
+    const data = {
+        "text": text
+    }
+
+    const resp = await fetch("https://tlvbox.azurewebsites.net/api/t2s", {
+            method: 'POST',
+            body: JSON.stringify(data)
+    })
+
+    if( resp.ok ) {
+        const synthResponse = await resp.json()
+        const oggBase64 = synthResponse.audioContent
+        
+        // Convert the synthesation resut into pure binary form
+        var binaryAudioData = convertToBinary(oggBase64)
+        playRawAudioData(binaryAudioData);
+    }
+}
+
+const playAudioStream = async(text) => {
 
     const data = {
           "prompt": text,
@@ -115,7 +118,7 @@ async function playAudioStream(text) {
     }   
 }
 
-function playRawAudioData(binaryAudioData) {
+const playRawAudioData = (binaryAudioData) => {
 
     var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -126,4 +129,17 @@ function playRawAudioData(binaryAudioData) {
         source.connect(audioCtx.destination);
         source.start();
     })       
+}
+
+// snippet from https://gist.github.com/borismus/1032746
+function convertToBinary (base64) {
+    var raw = window.atob(base64);
+    var rawLength = raw.length;
+
+    var array = new Uint8Array(new ArrayBuffer(rawLength));
+
+    for(i = 0; i < rawLength; i++) {
+        array[i] = raw.charCodeAt(i);
+    }
+    return array;
 }
