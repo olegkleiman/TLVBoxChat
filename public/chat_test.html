@@ -122,27 +122,28 @@
         if( 'webkitSpeechRecognition' in window ) {
 
             start_button.style.display = 'inline-block';
-            var recognition = new webkitSpeechRecognition();
-            recognition.continuous = false;
-            recognition.interimResults = true;
+            recognition = new (window.webkitSpeechRecognition || 
+            window.webkitSpeechRecognition ||
+            window.mozSpeechRecognition ||
+            window.msSpeechRecognition)();
 
-            recognition.onstart = function() {
+            recognition.onstart = () => {
                 recognizing = true;
                 start_img.src = 'https://www.google.com/intl/en/chrome/assets/common/images/content/mic-animate.gif';
             };
 
-            recognition.onerror = function(event) {
+            recognition.onerror = (event) => {
                 console.log(event.error);
                 start_img.src = 'https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif';
             };
 
-            recognition.onend = function() {
+            recognition.onend = () => {
                 recognizing = false;
                 start_img.src = 'https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif';
             };
 
-            recognition.onresult = function(event) {
-                
+            recognition.onresult = (event) => {
+
                 var interim_transcript = '';
                 if (typeof(event.results) == 'undefined') {
                     recognition.onend = null;
@@ -158,9 +159,9 @@
                 }
 
                 final_span.innerHTML = final_transcript;
-                console.log(`Final: ${final_transcript}`)
+                console.log(`Final transcript: ${final_transcript}`)
                 interim_span.innerHTML = interim_transcript;
-                console.log(`Interim: ${interim_transcript}`)
+                console.log(`Logging interim transcript: ${interim_transcript}`)
             };
     }
 
