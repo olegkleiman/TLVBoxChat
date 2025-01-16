@@ -43,7 +43,7 @@
             const recognition = new webkitSpeechRecognition();
             recognition.lang = 'he-IL';
             recognition.continuous = false; // when the user stops talking, speech recognition will end.
-            recognition.interimResults = false; // only results returned by the recognizer are final and will not change. 
+            recognition.interimResults = true; // false; // only results returned by the recognizer are final and will not change. 
             recognition.onspeechend = () => {
               recognition.stop();
             };      

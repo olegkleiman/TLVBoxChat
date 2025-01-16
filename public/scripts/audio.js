@@ -1,14 +1,54 @@
+var recognition;
+if ('webkitSpeechRecognition' in window ) {
+            
+    recognition = new window.webkitSpeechRecognition();
+
+    recognition.lang = 'he-IL';
+    recognition.continuous = false; // when the user stops talking, speech recognition will end.
+    recognition.interimResults = false; // only results returned by the recognizer are final and will not change. 
+    recognition.onstart = () => {
+        console.log("Speech recognition started");
+    }
+    recognition.onend = () => {
+        console.log("Speech recognition ended");
+    }
+    recognition.onspeechend = () => {
+        console.log("Speech ended");
+        recognition.stop();
+    };      
+    recognition.onnomatch = (event) => {
+        console.error("I didn't recognize your speech.");
+    }; 
+    recognition.onerror = (event) => {
+        console.error(`Error occurred while transcribing audio: ${event.error}`);
+    }
+    recognition.onresult = (event) => {
+        stopRecording();
+
+        const transcript = event.results[0][0].transcript;
+        console.log(`Transcript: ${transcript}`);
+    }
+}
+
 const openMicrophone = async() => {
     
     const micPermissions = localStorage.getItem("microphonePermissions"); 
-    
     const micImage = document.getElementById('mic_img');
 
     try {
-        await requestMicrophonePermission();
+        if( !micPermissions ) {
+            await requestMicrophonePermission();
+            localStorage.setItem("microphonePermissions", "true");
+            return;
+        }
+
         micImage.src = "https://www.google.com/intl/en/chrome/assets/common/images/content/mic-animate.gif";
 
-        startRecording();
+        if( micImage.alt == "Start" )
+            startRecording();
+        else
+            stopRecording();
+        
     } catch (error) {
         console.error(error);
     }
