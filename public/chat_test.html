@@ -31,7 +31,7 @@
         #start_button {
             border: 0;
             background-color:transparent;
-            padding: 0;
+            padding: 4px;
         }
         .interim {
             color: gray;
@@ -45,20 +45,6 @@
         }
         .marquee {
             margin: 20px auto;
-        }
-
-        #buttons {
-            margin: 10px 0;
-            position: relative;
-            top: -50px;
-        }
-        #copy {
-            margin-top: 20px;
-        }
-
-        #copy > div {
-            display: none;
-            margin: 0 70px;
         }
     </style>
     <style>
@@ -75,34 +61,6 @@
         </div>
       </div>
       <div class="compact marquee">
-        <div id="info">
-          <p id="info_start">
-            Click on the microphone icon and begin speaking for as long as you like.
-          </p>
-          <p id="info_speak_now" style="display:none">
-            Speak now.
-          </p>
-          <p id="info_no_speech" style="display:none">
-            No speech was detected. You may need to adjust your <a href=
-            "//support.google.com/chrome/bin/answer.py?hl=en&amp;answer=1407892">microphone
-            settings</a>.
-          </p>
-          <p id="info_no_microphone" style="display:none">
-            No microphone was found. Ensure that a microphone is installed and that
-            <a href="//support.google.com/chrome/bin/answer.py?hl=en&amp;answer=1407892">
-            microphone settings</a> are configured correctly.
-          </p>
-          <p id="info_allow" style="display:none">
-            Click the "Allow" button above to enable your microphone.
-          </p>
-          <p id="info_denied" style="display:none">
-            Permission to use microphone was denied.
-          </p>
-          <p id="info_blocked" style="display:none">
-            Permission to use microphone is blocked. To change, go to
-            chrome://settings/contentExceptions#media-stream
-          </p>
-        </div>
         <div id="div_start">
           <button id="start_button" onclick="startButton(event)"><img alt="Start" id="start_img"
           src="https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif"></button>
@@ -117,71 +75,21 @@
 
     <script>
 
-        const audioEngine = new AudioEngine('he-IL');
-
-        var final_transcript = '';
-        var recognizing = false;
-        if( 'webkitSpeechRecognition' in window ) {
-
-            start_button.style.display = 'inline-block';
-            recognition = new (window.webkitSpeechRecognition || 
-                    window.webkitSpeechRecognition ||
-                    window.mozSpeechRecognition ||
-                    window.msSpeechRecognition)();
-
-            recognition.onstart = () => {
-                recognizing = true;
-                start_img.src = 'https://www.google.com/intl/en/chrome/assets/common/images/content/mic-animate.gif';
-            };
-
-            recognition.onerror = (event) => {
-                console.log(event.error);
-                start_img.src = 'https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif';
-            };
-
-            recognition.onend = () => {
-                recognizing = false;
-                start_img.src = 'https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif';
-            };
-
-            recognition.onresult = (event) => {
-
-                var interim_transcript = '';
-                if (typeof(event.results) == 'undefined') {
-                    recognition.onend = null;
-                    recognition.stop();
-                    return;
-                }
-                for (var i = event.resultIndex; i < event.results.length; ++i) {
-                    if (event.results[i].isFinal) {
-                        final_transcript += event.results[i][0].transcript;
-                        audioEngine.speak(final_transcript)
-                    } else {
-                        interim_transcript += event.results[i][0].transcript;
-                    }
-                }
-
-                final_span.innerHTML = final_transcript;
-                console.log(`Final transcript: ${final_transcript}`)
-                interim_span.innerHTML = interim_transcript;
-                console.log(`Logging interim transcript: ${interim_transcript}`)
-            };
-    }
-
-    function startButton(event) {
-        if (recognizing) {
-            recognition.stop();
-            return;
+        const recogniztion_started = () => {
+            start_img.src = 'https://www.google.com/intl/en/chrome/assets/common/images/content/mic-animate.gif';
         }
-        
-        final_transcript = '';
-        recognition.lang = 'he-IL'
-        recognition.start();
-        ignore_onend = false;
-        final_span.innerHTML = '';
-        interim_span.innerHTML = '';
-        start_img.src = 'https://www.google.com/intl/en/chrome/assets/common/images/content/mic-slash.gif';
-    }
+        const recognition_ended = () => {
+            start_img.src = 'https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif';
+        }
+        const recornition_result = (result) => {
+            start_img.src = 'https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif';
+            final_span.innerHTML = result;
+        }
+        const audioEngine = new AudioEngine('he-IL', recogniztion_started, recognition_ended, recornition_result);
+
+        function startButton(event) {
+            audioEngine.startRecognition()
+        }
 
     function speak(text) {
         audioEngine.speak(text);
