@@ -153,6 +153,7 @@
                 for (var i = event.resultIndex; i < event.results.length; ++i) {
                     if (event.results[i].isFinal) {
                         final_transcript += event.results[i][0].transcript;
+                        speak(final_transcript)
                     } else {
                         interim_transcript += event.results[i][0].transcript;
                     }
@@ -178,6 +179,25 @@
         final_span.innerHTML = '';
         interim_span.innerHTML = '';
         start_img.src = 'https://www.google.com/intl/en/chrome/assets/common/images/content/mic-slash.gif';
+    }
+
+    function speak(text) {
+        
+        if ('speechSynthesis' in window) {
+            
+            const speechSynthesis = window.speechSynthesis;
+
+            let utterance = new SpeechSynthesisUtterance(text);
+            utterance.pitch = 1;
+            utterance.rate = 1;
+
+            const voices = speechSynthesis.getVoices().filter(voice => voice.lang === 'he-IL');
+
+            utterance.voice = voices[0];
+            speechSynthesis.speak(utterance)
+        }
+        else 
+            console.error(`speechSynthesis is not supported!`);
     }
     </script>
   </body>
