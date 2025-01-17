@@ -113,9 +113,11 @@
         </div>
       </div>
     </div>
-    <script src="https://www.google.com/intl/en/chrome/assets/common/js/chrome.min.js"></script> 
+    <script src="./scripts/audioEngine.js"></script>
 
     <script>
+
+        const audioEngine = new AudioEngine('he-IL');
 
         var final_transcript = '';
         var recognizing = false;
@@ -123,9 +125,9 @@
 
             start_button.style.display = 'inline-block';
             recognition = new (window.webkitSpeechRecognition || 
-            window.webkitSpeechRecognition ||
-            window.mozSpeechRecognition ||
-            window.msSpeechRecognition)();
+                    window.webkitSpeechRecognition ||
+                    window.mozSpeechRecognition ||
+                    window.msSpeechRecognition)();
 
             recognition.onstart = () => {
                 recognizing = true;
@@ -153,7 +155,7 @@
                 for (var i = event.resultIndex; i < event.results.length; ++i) {
                     if (event.results[i].isFinal) {
                         final_transcript += event.results[i][0].transcript;
-                        speak(final_transcript)
+                        audioEngine.speak(final_transcript)
                     } else {
                         interim_transcript += event.results[i][0].transcript;
                     }
@@ -182,22 +184,7 @@
     }
 
     function speak(text) {
-        
-        if ('speechSynthesis' in window) {
-            
-            const speechSynthesis = window.speechSynthesis;
-
-            let utterance = new SpeechSynthesisUtterance(text);
-            utterance.pitch = 1;
-            utterance.rate = 1;
-
-            const voices = speechSynthesis.getVoices().filter(voice => voice.lang === 'he-IL');
-
-            utterance.voice = voices[0];
-            speechSynthesis.speak(utterance)
-        }
-        else 
-            console.error(`speechSynthesis is not supported!`);
+        audioEngine.speak(text);
     }
     </script>
   </body>
