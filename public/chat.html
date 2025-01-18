@@ -64,7 +64,9 @@
     </head>
     <body>
         <div>Version December 2024 - Omon Ra</div>
+        <div id="count">0</div>
         <div id="location">xx,yy</div>
+        <div id="expirationTime"></div>
         <div class="compact marquee">
             <div id="div_start">
                 <button id="start_button" onclick="startButton(event)" class="message-mic" >
@@ -112,6 +114,7 @@
 
             const dfMessenger = document.querySelector('df-messenger');
             const locationDiv = document.getElementById('location');
+            const countDiv = document.getElementById("count");
 
             // start of speech recognition block
             const recogniztion_started = () => {
@@ -169,7 +172,7 @@
 
             // Authentication stuff
             function receiveAccessToken(accessToken) {
-
+                
                 console.log("receiveAccessToken called")
                 var token = jwt_decode(accessToken);
 
@@ -184,7 +187,9 @@
                 const expirationDiv = document.getElementById("expirationTime");
                 var d = new Date(token.exp * 1000);
                 expirationDiv.innerText = d.toLocaleString()
-                }
+
+                return true;
+            }
 
             function expire() {
 

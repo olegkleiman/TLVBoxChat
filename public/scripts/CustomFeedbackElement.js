@@ -13,8 +13,19 @@ class CustomFeedbackElement extends HTMLElement {
 
       // Build the component as required.
       const button = document.createElement('button');
-      button.innerText = 'Submit';
+      button.textContent = 'שלח';
       button.style = "border-color: rgb(42, 39, 218); background-color: white; border-radius: 8px; font: -webkit-control;"
+      const style = document.createElement('style');
+      style.textContent = `
+        button {
+          border-color: rgb(42, 39, 218); 
+          background-color: white; 
+          border-radius: 8px; 
+          font: -webkit-control;
+        }
+      `;
+      this.renderRoot.appendChild(style);
+
       button.addEventListener('click', () => {
         this._onSubmitClick();
       });
