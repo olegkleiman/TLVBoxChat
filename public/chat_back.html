@@ -1,0 +1,661 @@
+<!DOCTYPE html> 
+<html> 
+  
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, user-scalable=yes">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta charset="UTF-8" />
+    <title>עוזרת אישית - עיריית ת"א</title>
+    <link rel="shortcut icon" type="image/png" sizes="32x32" href="https://www.tel-aviv.gov.il/_layouts/15/TlvSP2013PublicSite/Images/IriaFavIcon.ico" />
+    <style>
+
+        :root{
+            direction: rtl;
+        }
+        df-messenger {
+          /*  direction: rtl; */
+          z-index: 999;
+          position: fixed;
+
+            /* Bot messages */
+            --df-messenger-message-bot-background: rgb(214, 203, 237);
+          /* --df-messenger-message-bot-background: linear-gradient(135deg, rgb(42, 39, 218), rgb(0, 204, 255)); */
+          --df-messenger-message-bot-border-bottom-right-radius: 20px;
+          --df-messenger-message-bot-border-bottom-left-radius: 20px;
+          --df-messenger-message-bot-border-top-right-radius: 20px;
+          --df-messenger-message-bot-border-top-left-radius: 20px;
+
+          --df-messenger-message-bot-margin-left: 30px;
+   
+          --df-messenger-message-bot-stack-border-bottom-left-radius: 100px;
+          --df-messenger-message-group-padding: 80px;
+          --df-messenger-message-bot-group-background: rgb(228, 221, 227);
+          --df-messenger-chat-padding: 100px;
+          
+          /* --df-messenger-chat-background-color: green; */
+          /* --df-messenger-send-icon: #f8c615; */
+
+          --df-messenger-message-user-align: flex-start;
+          --df-messenger-message-bot-align: flex-end;
+
+          /* Bot chips */
+          --df-messenger-chips-background-color: var(--df-messenger-message-bot-background);
+          --df-messenger-chips-border-color: rgb(42, 39, 218);
+          --df-messenger-chips-border-radius: 12px;
+          --df-messenger-chips-box-shadow: 12px 2px 2px 0 rgba(0, 0, 0, 0.24);
+          /* --df-messenger-chips-background-hover: var(--df-messenger-message-bot-background); */
+          --df-messenger-chips-hover-background-color: white;
+
+          /* User messages */
+          /* --df-messenger-message-user-border: 1px solid rgb(42, 39, 218); */
+          --df-messenger-message-user-group-background: rgb(225, 67, 67);
+
+          --df-messenger-message-user-background: linear-gradient(135deg, rgb(42, 39, 218), rgb(0, 204, 255));
+          --df-messenger-message-user-border-bottom-right-radius: 20px;
+          --df-messenger-message-user-border-bottom-left-radius: 20px;
+          --df-messenger-message-user-border-top-right-radius: 20px;
+          --df-messenger-message-user-border-top-left-radius: 20px;
+          --df-messenger-message-user-font-color: rgb(255, 255, 255);
+          --df-messenger-message-user-font-weight:var(--df-messenger-bot-message);
+
+          /* --df-messenger-bot-message: red; */
+          /* --df-messenger-chat-background-color: #fafafa; */
+          /* --df-messenger-button-titlebar-color: #0a2f79; */
+          /*--df-messenger-font-color: #000;
+          --df-messenger-font-family: Google Sans;
+          --df-messenger-font-size: 14px;
+          --df-messenger-chat-background: #f3f6fc;
+          --df-messenger-message-user-background: #d3e3fd;
+          --df-messenger-message-bot-background: #ecf3fe; 
+          --df-messenger-input-background: white;
+          --df-messenger-chips-text-wrap: "nowrap";
+          
+          --df-messenger-send-icon-color-hover: brown;
+          --df-messenger-send-icon-color-active: #0e3bdf;
+          */
+          --df-messenger-send-icon-offset-x: -2px;
+          --df-messenger-input-max-width: 86%;
+          --df-messenger-chat-max-width: 100%; 
+          --df-messenger-input-padding: 12px 2px 24px 42px;
+          --df-messenger-input-box-padding: 16px 16px;
+
+          bottom: 16px;
+          right: 16px; 
+        }
+
+        df-messenger-user-input {
+            direction: rtl;            
+        }
+
+    </style>
+    <link rel="stylesheet" href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"> 
+    <link rel="stylesheet" href="./tlvbox.css">
+    <script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"></script>
+    <script src="https://unpkg.com/jwt-decode@2.0.4/build/jwt-decode.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/gh/arikw/itm-to-wgs84-converter@1/src/index.js"></script> -->
+    <link rel="stylesheet" href="./tlvbox.css">
+    <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs"
+        type="module"></script>
+    <!-- <script src="//code.tidio.co/xqutuowskd5e5uobkcgemtc4l2iq2aio.js" async></script> -->
+</head> 
+  
+<body> 
+    <div>Version December 2024 - Omon Ra</div>
+    <!-- <div hidden id="jwt">ey..</div> -->
+    <div id="count">0</div>
+    <div id="location">xx,yy</div>
+    <button class="mdc-button mdc-button--raised"
+            onClick="expire()">
+        <span class="mdc-button__ripple"></span>
+        <span class="mdc-button__touch"></span>
+        <span class="mdc-button__label">Force Access Token Expiration</span>
+    </button>
+    <div id="expirationTime"></div>
+    <button class="mdc-button mdc-button--raised"
+            onClick="newSession()">
+        <span class="mdc-button__ripple"></span>
+        <span class="mdc-button__label">New Session</span>
+    </button>
+    <br />
+    <button onclick="playAudio('שָׁלוֹם, אֲנִי הָעוֹזֶרֶת הָאִישִּׁית. אפשר לשאול אותי על כל דבר שקורה בעיר תל-אביב. איך אוכל לסייע?')">
+        <span>Play</span>
+    </button>
+    <br />
+    <button onclick="playAudioStream('שָׁלוֹם')">
+        <span>Play Chat</span>
+    </button>
+
+    <div>
+        <!-- Using intent='' You can use an event handler that will be called for this event and will produce the first agent message. -->
+        <!-- session-id	Optional	A session ID. If this is not supplied, the integration will generate a unique ID for each chat dialog. -->
+        <df-messenger
+            project-id="muni-tlv"
+            agent-id="46727f85-4983-4edb-b8b1-55df166837da"
+            language-code="he-il"
+            max-query-length="-1"
+            allow-feedback="all"
+            intent="reset_conversation"
+            url-allowlist="*">
+            <df-messenger-chat-bubble
+                expanded="true"
+                chat-title="TLV Box"
+                chat-subtitle="עוזרת אישית"
+                placeholder-text="טקסט חופשי..."
+                chat-title-icon="./assets/img/HAL9001Logo.png"
+                allow-fullscreen="always">
+            </df-messenger-chat-bubble>
+        </df-messenger>
+
+        <dotlottie-player
+            src="https://lottie.host/c0622812-ac4e-4a2f-8678-0f4165553f2f/NAFkq6Fe5M.lottie"
+            background="transparent"
+            speed="1"
+            style="width: 300px; height: 300px"
+            loop
+            autoplay>
+        </dotlottie-player>
+        <button id="record" class="message-mic" onclick="openMicrophone()">
+            <img alt="microphone" id="mic_img" style="border:none;" width="32" height="32" src="https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif" />
+        </button>
+        <button id="camera" class="message-camera" onclick="openCamera()">
+            <!-- <button id="camera" class="message-camera" onclick="openCamera()"> -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 256 256">
+                <path d="M208,56H180.28L166.65,35.56A8,8,0,0,0,160,32H96a8,8,0,0,0-6.65,3.56L75.71,56H48A24,24,0,0,0,24,80V192a24,24,0,0,0,24,24H208a24,24,0,0,0,24-24V80A24,24,0,0,0,208,56Zm8,136a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V80a8,8,0,0,1,8-8H80a8,8,0,0,0,6.66-3.56L100.28,48h55.43l13.63,20.44A8,8,0,0,0,176,72h32a8,8,0,0,1,8,8ZM128,88a44,44,0,1,0,44,44A44.05,44.05,0,0,0,128,88Zm0,72a28,28,0,1,1,28-28A28,28,0,0,1,128,160Z">
+                </path>
+            </svg>
+        </button>
+        <button id="start" class="message-start" onclick="reset_conversation()">
+            <img alt="Start"  width="24" height="24" src="assets/img/power-on-24.png" />
+        </button>
+        <input type="file" id="pictureSelector" accept="image/*" class="message-file-input" capture="camera" id="camera">
+    </div>
+
+    <script>
+
+        // snippet from https://gist.github.com/borismus/1032746
+        function convertDataURIToBinary(base64) {
+            var raw = window.atob(base64);
+            var rawLength = raw.length;
+
+            var array = new Uint8Array(new ArrayBuffer(rawLength));
+
+            for(i = 0; i < rawLength; i++) {
+                array[i] = raw.charCodeAt(i);
+            }
+            return array;
+        }
+
+        async function playAudioStream() {
+
+            const data = {
+                  "prompt": "שלום",
+                  "sessionid": ""
+            }
+
+            const jwt = localStorage.getItem("accessToken");
+            const resp = await fetch("http://localhost:7079/api/Chat", {
+                    method: 'POST',
+                    headers: {
+                        "Authorization" : jwt
+                    },
+                    body: JSON.stringify(data)
+            })
+            if( resp.ok ) {
+                const chatResponse = await resp.json()
+                const strAudioContent = chatResponse.audioContent;
+
+                let utf8Encode = new TextEncoder();
+                const binaryAudioData = utf8Encode.encode(strAudioContent);
+                playRawAudioData(binaryAudioData);
+            }   
+        }
+
+        async function playAudio(audioText) {
+
+            const data = {
+                  "text": audioText
+            }
+
+            const resp = await fetch("https://tlvbox.azurewebsites.net/api/t2s", {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+            })
+
+            if( resp.ok ) {
+                const synthResponse = await resp.json()
+                const oggBase64 = synthResponse.audioContent
+                
+                // Convert the synthesation resut into pure binary form
+                var binaryAudioData = convertDataURIToBinary(oggBase64)
+                playRawAudioData(binaryAudioData);
+            }
+        }
+
+        function playRawAudioData(binaryAudioData) {
+
+            var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+            const source = audioCtx.createBufferSource();
+
+            audioCtx.decodeAudioData(binaryAudioData.buffer.slice(0), function(buffer) {
+                source.buffer = buffer;
+                source.connect(audioCtx.destination);
+                source.start();
+            })       
+        }
+
+        const locationDiv = document.getElementById('location');
+        const dfMessenger = document.querySelector('df-messenger');
+        const micButton = document.getElementById('record');
+        const cameraButton = document.getElementById('camera');
+        const micImage = document.getElementById('mic_img');
+        var currentVoice;
+        const countDiv = document.getElementById("count");
+
+        const recognition = new (window.webkitSpeechRecognition || 
+            window.webkitSpeechRecognition ||
+            window.mozSpeechRecognition ||
+            window.msSpeechRecognition)();
+
+        recognition.lang = 'he-IL';
+        recognition.continuous = false; // when the user stops talking, speech recognition will end.
+        recognition.interimResults = false; // if false only results returned by the recognizer are final and will not change. 
+        recognition.onstart = () => {
+            console.log("Speech recognition started");
+        }
+        recognition.onend = () => {
+            console.log("Speech recognition ended");
+        }
+        recognition.onspeechend = () => {
+            console.log("Speech ended");
+            recognition.stop();
+        };      
+        recognition.onnomatch = (event) => {
+            console.error("I didn't recognize your speech.");
+        }; 
+        recognition.onerror = (event) => {
+            console.error(`Error occurred while transcribing audio: ${event.error}`);
+        }
+        recognition.onresult = (event) => {
+            stopRecording();
+
+            const transcript = event.results[0][0].transcript;
+            dfMessenger.renderCustomText(transcript);
+            dfMessenger.sendQuery(transcript, false);
+
+            // if ('speechSynthesis' in window) {
+            //     let utterance = new SpeechSynthesisUtterance(transcript);
+            //     window.speechSynthesis.onvoiceschanged = () => {
+            //         var voices = window.speechSynthesis.getVoices();
+            //         currentVoice = voices[0];
+            //         utterance.voice = voices[0];
+            //         utterance.pitch = 1
+            //         utterance.rate = 0.5
+            //         speechSynthesis.speak(utterance)
+            //     };
+            //     utterance.onend = function (event) {
+            //         console.log("SpeechSynthesisUtterance.onend");
+            //     };
+            //     utterance.onerror = function (event) {
+            //         console.error("SpeechSynthesisUtterance.onerror");
+            //     };
+            //     utterance.voice = currentVoice;
+            //     speechSynthesis.speak(utterance)
+            // }
+            // else {
+            //   playAudio(transcript);
+            // }
+        }
+
+        const projectId = 'muni-tlv';
+        const startRecording = () => {
+
+            try {
+                recognition.start();
+
+                micImage.alt = "Stop";
+                micImage.src = "https://www.google.com/intl/en/chrome/assets/common/images/content/mic-animate.gif";
+            } catch(ex) {
+                console.log(ex.message);
+                recognition.stop();
+            }
+        }
+        const stopRecording = () => {
+            try {
+                recognition.stop();
+
+                micImage.alt = "Start";
+                micImage.src = "https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif";
+            } catch(ex) {
+                console.log(ex.message);
+            }
+        }
+
+        // When the record button is clicked, start recording audio
+        const openMicrophone = () => {
+
+            const micPermissions = localStorage.getItem("microphonePermissions"); 
+            if( !micPermissions ) {
+                requestMicrophonePermission()
+                localStorage.setItem("microphonePermissions", "true");
+                return;
+            }   
+
+            if( micImage.alt == "Start" )
+                startRecording();
+            else
+                stopRecording();
+
+        };
+
+        async function requestMicrophonePermission() {
+            try {
+                const mediaDevices = navigator.mediaDevices;
+                if (!mediaDevices || !mediaDevices.getUserMedia) {
+                    alert("getUserMedia() not supported.");
+                    return;
+                }
+                // prompts the user for permission to use a microphone
+                await navigator.mediaDevices.getUserMedia({ audio: true });
+                console.log("Microphone permission granted!");
+             } catch(ex) {
+                console.error("Microphone permission denied:", ex.message);
+            }
+        }
+
+        function receiveAccessToken(accessToken) {
+
+            console.log("receiveAccessToken called")
+            var token = jwt_decode(accessToken);
+
+            var cnt = parseInt(countDiv.innerText, 10);
+            console.log("Count: " + cnt)
+            if( cnt == 0 ) {
+                dfMessenger.renderCustomText(`${token.name} שלום`)
+            }
+            countDiv.textContent = cnt + 1;
+            localStorage.setItem("accessToken", accessToken);
+
+            const expirationDiv = document.getElementById("expirationTime");
+            var d = new Date(token.exp * 1000);
+            expirationDiv.innerText = d.toLocaleString()
+        }
+
+        function expire() {
+
+            webViewInterface = window.Native
+            webViewInterface.refreshAccessToken();
+
+        }
+
+        function newSession()
+        {
+            dfMessenger.startNewSession({ retainHistory: true });
+            location.reload()
+        }
+
+        document.getElementById('pictureSelector').addEventListener('change', async (e) => {
+            if( e.target.files[0] ) {
+                const file = e.target.files[0];
+                console.log(`File selected: ${file.name}`);
+
+                const reader = new FileReader();
+                reader.onload = async () => {
+
+                    const parts = dfMessenger.sessionId.split("dfMessenger-");
+                    const data = {
+                            session_id: parts[1],
+                            picture_base64: reader.result
+                        }
+                    const resp = await fetch('https://tlvbox.azurewebsites.net/api/UploadImage', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json', 
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    if( resp.ok ) {
+                        const url = await resp.text()
+                        console.log(url);
+
+                        const event = new CustomEvent("df-file-upload-completed", {
+                            detail: url
+                        });
+                        dfMessenger.dispatchEvent(event);
+                    } else
+                        console.error("error")
+
+                }
+
+                reader.readAsDataURL(file);
+            }
+        });
+
+        async function openCamera() {
+
+            const cameraPermissions = localStorage.getItem("cameraPermissions"); 
+            if( cameraPermissions == null || cameraPermissions === "false" ) {
+                const mediaStream = await requestCameraPermission();
+                
+                if( !mediaStream ) {
+                    localStorage.setItem("cameraPermissions", "false");
+                    return;
+                }
+
+                localStorage.setItem("cameraPermissions", "true");
+
+                let video = document.getElementById("vid");
+                if ("srcObject" in video) {
+                    video.srcObject = mediaStream;
+                } else {
+                    video.src = window.URL.createObjectURL(mediaStream);
+                }
+                video.addEventListener("loadedmetadata", () => {
+                    video.play();
+                });
+
+                return;
+            } else {
+                webViewInterface = window.Native
+                webViewInterface.UseCamera();
+            }  
+        }
+
+        const requestCameraPermission = async () => {
+            try {
+                const mediaDevices = navigator.mediaDevices;
+                if (!mediaDevices || !mediaDevices.getUserMedia) {
+                    alert("getUserMedia() not supported.");
+                    return null;
+                }
+                // prompts the user for permission to use a camera
+                return await navigator.mediaDevices.getUserMedia({ 
+                    audio: true,
+                    video: { facingMode: "environment" } //  rear camera
+                 });
+             } catch(ex) {
+                console.error("Camera permission denied:", ex.message);
+                return null;
+            }
+        }
+
+        function geoSuccess(position) {
+
+                var location = `${position.coords.latitude},${position.coords.longitude}`
+
+                // Comment these 3 lines for location-aware app
+               const latitude = 32.081779
+               const longitude = 34.780675
+               location = `${latitude},${longitude}`
+
+                console.log(location);
+                
+                locationDiv.innerText = location;
+        }
+
+        function geoError(error) {
+                //console.error(error.message)
+                alert(`Error: ${error.message}`)
+        }
+
+        if( !navigator.geolocation ) {
+            alert('No geolocation available')
+        } else {
+            //navigator.geolocation.getCurrentPosition(geoSuccess, geoError);
+            const watchID = navigator.geolocation.watchPosition(geoSuccess, geoError);
+            console.log(`WatchId: ${watchID}`)
+        }
+
+        // window.addEventListener('df-messenger-loaded', function() {
+
+        //     console.log('Messenger is ready.');
+
+        //     const queryParams = {
+        //         parameters:{
+        //           "jwt": localStorage.getItem("accessToken"),
+        //           "User_Authorized": "True",
+        //           "userId": '313069486',
+        //           }
+        //       };
+
+        //     dfMessenger.setQueryParameters(queryParams)
+        // });
+
+        function reset_conversation() {
+            //init();
+            dfMessenger.sendRequest('event', 'reset_conversation');    
+        }
+        
+
+        dfMessenger.addEventListener('df-file-upload-completed', function (event) {
+            // simulates an end-user input that is normally provided to the agent dialog
+            // (May also be used to simulate events)
+
+            console.log(event.detail);
+
+            const queryParams = {
+                parameters:{
+                  "uploaded_picture_uri": event.detail
+                  }
+              };
+
+            dfMessenger.setQueryParameters(queryParams)   
+            dfMessenger.sendRequest('query','file uploaded');
+        });
+
+        dfMessenger.addEventListener('df-upload-file-selected', async (event) => {
+            const url = URL.createObjectURL(event.detail.file);
+            console.log(`URL of selected file: ${url}`);
+
+            const eventDetail = event.detail;
+
+            // const stream = event.detail.file.stream();
+            // const readableStream = await stream.getReader();
+            // const chunk = await readableStream.read();
+            // const _val = new TextDecoder('utf-8').decode(chunk.value);
+
+            const reader = new FileReader();
+
+            reader.onload = async () => {
+                
+                try {
+                    const parts = dfMessenger.sessionId.split("dfMessenger-");
+                    const data = {
+                            session_id: parts[1],
+                            picture_base64: reader.result
+                        }
+                    const resp = await fetch('https://tlvbox.azurewebsites.net/api/UploadImage', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json', 
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    console.log(resp);
+
+                    const event = new Event("df-file-upload-completed", {
+                        detail: eventDetail
+                    });
+                    dfMessenger.dispatchEvent(event);
+
+                } catch(ex) {
+                    console.error(ex.message);
+                }
+            }
+            reader.onerror = (error) => {
+                console.error(error)
+            }
+            reader.readAsDataURL(event.detail.file);
+        });
+
+        window.addEventListener('df-session-id-set', function(event) {
+            console.log('Session set');
+        });
+
+        dfMessenger.addEventListener('df-chat-open-changed', function(event) {
+            console.log(`Chat is ${event.detail.isOpen ? 'open' : 'closed'}`);
+            const sendButton = document.getElementById('send-icon-button');
+        });
+        window.addEventListener('df-messenger-error', function (event) {
+            console.log(event.detail.error)
+        });
+        window.addEventListener('df-request-sent', (event) => {
+            console.log('Request', event.detail.data.requestBody);
+        });
+        window.addEventListener('df-response-received', (event) => {
+
+            console.log(event.detail)
+
+            var audioText = "";
+            if( event.detail.messages[0].richElements )
+                audioText = event.detail.messages[0].richElements[0].text[0];
+            else
+                audioText = event.detail.messages[0].text;
+            
+            playAudio(audioText);
+        })
+
+        // Initialize DF parameters. This should be done
+        // both for the user's utterance and introductory chips.
+        window.addEventListener('df-chip-clicked', async (event) => {
+            init();
+        })
+        window.addEventListener('df-user-input-entered', (event) => {
+            init();
+        })
+
+        const init = () => {
+            const jwt = localStorage.getItem("accessToken");
+
+            try {
+                const token = jwt_decode(jwt);
+
+                const coordinates = locationDiv.innerText.split(",");
+                const latitude = parseFloat(coordinates[0]);
+                const longitude = parseFloat(coordinates[1]);
+
+                const queryParams = {
+                    parameters:{
+                    "jwt": jwt,
+                    "userEmail": token["signInNamesInfo.emailAddress"],
+                    "userName": token.name,
+                    "userId": token["signInNames.citizenId"],
+                    "latitude": latitude,
+                    "longitude" : longitude
+                    }
+                };
+
+                dfMessenger.setQueryParameters(queryParams)     
+            } catch(ex) {
+                console.log(ex.message)
+            }
+        }
+        
+    </script>
+</body> 
+  
+</html>

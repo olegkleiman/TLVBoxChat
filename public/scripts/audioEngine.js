@@ -88,4 +88,17 @@ class AudioEngine {
         utterance.voice = this.voice;
         speechSynthesis.speak(utterance);
     }
+
+    playRawAudioData = (binaryAudioData) => {
+
+        var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        const source = audioCtx.createBufferSource();
+
+        audioCtx.decodeAudioData(binaryAudioData.buffer.slice(0), function(buffer) {
+            source.buffer = buffer;
+            source.connect(audioCtx.destination);
+            source.start();
+        })       
+    }
 }

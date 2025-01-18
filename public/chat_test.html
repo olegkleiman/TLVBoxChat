@@ -4,22 +4,20 @@
 
     <meta charset="utf-8">
     <meta content="initial-scale=1, minimum-scale=1, width=device-width" name="viewport">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" /> 
+
     <title>עוזרת אישית - עיריית ת"א</title>
+    
     <link rel="shortcut icon" type="image/png" sizes="32x32" href="https://www.tel-aviv.gov.il/_layouts/15/TlvSP2013PublicSite/Images/IriaFavIcon.ico" />
     <link href="https://www.google.com/intl/en/chrome/assets/common/css/chrome.min.css" rel="stylesheet" nonce="JGH9Qvc6nBgAAO3frL9QRQ">
+    <link rel="stylesheet" href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css">
     
-    <style>
-    
-        #info {
-            font-size: 20px;
-        }
+    <script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"></script>
+    <script src="https://unpkg.com/jwt-decode@2.0.4/build/jwt-decode.min.js"></script>
 
-        #div_start {
-            float: right;
-        }
-        #headline {
-            text-decoration: none
-        }
+    <style>
         #results {
             font-size: 14px;
             font-weight: bold;
@@ -51,39 +49,119 @@
         a.c1 {font-weight: normal;}
     </style>
   </head>
-  <body class="" id="grid">
-    <div class="browser-landing" id="main">
-      <div class="compact marquee-stacked" id="marquee">
-        <div class="marquee-copy">
-          <h1>
-            <a class="c1" href="https://webaudio.github.io/web-speech-api/">Web Speech API</a> Demonstration
-          </h1>
+  <body>
+    <div id="location">xx,yy</div>
+    <div id="main">
+        <div class="compact marquee-stacked" id="marquee">
+          <div class="marquee-copy">
+            <h1>
+              <a class="c1" href="https://webaudio.github.io/web-speech-api/">Web Speech API</a> Demonstration
+            </h1>
+          </div>
+        </div>
+        <div class="compact marquee">
+          <div id="div_start">
+            <button id="start_button" onclick="startButton(event)"><img alt="Start" id="start_img"
+            src="https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif"></button>
+          </div>
+          <div id="results">
+            <div class="final" id="final_span"></div> 
+            <div class="interim" id="interim_span"></div>
+          </div>
         </div>
       </div>
-      <div class="compact marquee">
-        <div id="div_start">
-          <button id="start_button" onclick="startButton(event)"><img alt="Start" id="start_img"
-          src="https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif"></button>
-        </div>
-        <div id="results">
-          <div class="final" id="final_span"></div> 
-          <div class="interim" id="interim_span"></div>
-        </div>
-      </div>
-    </div>
+      <div>
+
+      <!-- Using intent='' You can use an event handler that will be called for this event and will produce the first agent message. -->
+      <!-- session-id	Optional	A session ID. If this is not supplied, the integration will generate a unique ID for each chat dialog. -->
+      <df-messenger
+          project-id="muni-tlv"
+          agent-id="46727f85-4983-4edb-b8b1-55df166837da"
+          max-query-length="-1"
+          allow-feedback="all"
+          expand="true"
+          language-code="he-IL"
+          intent="reset_conversation"
+          url-allowlist="*">
+          <df-messenger-chat-bubble
+              expanded="true"
+              chat-title="TLV Box"
+              chat-subtitle="עוזרת אישית"
+              placeholder-text="טקסט חופשי..."
+              chat-title-icon="./assets/img/HAL9001Logo.png"
+              allow-fullscreen="always">
+          </df-messenger-chat-bubble>
+      </df-messenger>
+      <!-- <CustomFeedbackElement></CustomFeedbackElement> -->
     <script src="./scripts/audioEngine.js"></script>
 
     <script>
 
+    class CustomFeedbackElement extends HTMLElement {
+      constructor() {
+        super();
+        // It is not strictly required but recommended to contain the custom
+        // element in a shadow root.
+        this.renderRoot = this.attachShadow({mode: 'open'});
+        console.log('CustomFeedbackElement constructor');
+      }
+
+      // Web component Lifecycle method.
+      connectedCallback() {
+        const wrapper = document.createElement('div');
+
+        // Build the component as required.
+        const button = document.createElement('button');
+        button.innerText = 'Submit';
+        button.addEventListener('click', () => {
+          this._onSubmitClick();
+        });
+        wrapper.appendChild(button);
+
+        this.renderRoot.appendChild(wrapper);
+      }
+
+      // Called when Submit button is clicked.
+      _onSubmitClick() {
+        const event = new CustomEvent("df-custom-submit-feedback-clicked", {
+          // `detail` may be any string,
+          // this will be sent to the backend to be stored.
+          detail: JSON.stringify({
+            "usefulness": 2,
+            "accuracy": 3,
+          }),
+          // Required to propagate up the DOM tree
+          // https://developer.mozilla.org/en-US/docs/Web/API/Event/bubbles
+          bubbles: true,
+          // Required to propagate across ShadowDOM
+          // https://developer.mozilla.org/en-US/docs/Web/API/Event/composed
+          composed: true,
+      });
+      this.dispatchEvent(event);
+      }
+    }
+
+    (function() {
+      // Registers the element. This name must be "df-external-custom-feedback".
+      customElements.define('df-external-custom-feedback', CustomFeedbackElement);
+    })();
+
+        const dfMessenger = document.querySelector('df-messenger');
+        const locationDiv = document.getElementById('location');
+
+        // start of speech recognition block
         const recogniztion_started = () => {
             start_img.src = 'https://www.google.com/intl/en/chrome/assets/common/images/content/mic-animate.gif';
         }
         const recognition_ended = () => {
             start_img.src = 'https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif';
         }
-        const recornition_result = (result) => {
+        const recornition_result = (transcript) => {
             start_img.src = 'https://www.google.com/intl/en/chrome/assets/common/images/content/mic.gif';
-            final_span.innerHTML = result;
+            final_span.innerHTML = transcript;
+            
+            dfMessenger.renderCustomText(transcript);
+            dfMessenger.sendQuery(transcript, false);
         }
         const audioEngine = new AudioEngine('he-IL', recogniztion_started, recognition_ended, recornition_result);
 
@@ -91,9 +169,56 @@
             audioEngine.startRecognition()
         }
 
-    function speak(text) {
-        audioEngine.speak(text);
-    }
+        function speak(text) {
+            audioEngine.speak(text);
+        }
+        // end of speech recognition block
+
+        // start of geolocation block
+        function geoSuccess(position) {
+
+          var location = `${position.coords.latitude},${position.coords.longitude}`
+
+          // Comment these 3 lines for location-aware app
+          const latitude = 32.081779
+          const longitude = 34.780675
+          location = `${latitude},${longitude}`
+
+          console.log(location);
+
+          locationDiv.innerText = location;
+        }
+
+        function geoError(error) {
+                //console.error(error.message)
+                alert(`Error: ${error.message}`)
+        }
+
+        if( !navigator.geolocation ) {
+            alert('No geolocation available')
+        } else {
+            //navigator.geolocation.getCurrentPosition(geoSuccess, geoError);
+            const watchID = navigator.geolocation.watchPosition(geoSuccess, geoError);
+            console.log(`WatchId: ${watchID}`)
+        }
+        // end of geolocation block
+
+        // DF Messenger event handlers
+        window.addEventListener('df-user-input-entered', (event) => {
+            init();
+        })
+
+        const init = () => {
+          try {
+              const coordinates = locationDiv.innerText.split(",");
+              const latitude = parseFloat(coordinates[0]);
+              const longitude = parseFloat(coordinates[1]);
+          } catch (error) {
+            console.error(error);
+          }
+        }
+        // End of DF Messenger event handlers
+
     </script>
   </body>
 </html>
