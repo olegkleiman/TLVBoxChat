@@ -14,6 +14,7 @@ class CustomFeedbackElement extends HTMLElement {
       // Build the component as required.
       const button = document.createElement('button');
       button.innerText = 'Submit';
+      button.style = "border-color: rgb(42, 39, 218); background-color: white; border-radius: 8px; font: -webkit-control;"
       button.addEventListener('click', () => {
         this._onSubmitClick();
       });
