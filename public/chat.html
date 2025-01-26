@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, user-scalable=yes">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
         <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
         <meta http-equiv="Pragma" content="no-cache" />
         <meta http-equiv="Expires" content="0" />
@@ -78,8 +78,11 @@
               <div class="interim" id="interim_span"></div>
             </div>
         </div>
-        <button onclick="audioEngine.speak('שָׁלוֹם, אֲנִי הָעוֹזֶרֶת הָאִישִּׁית. אפשר לשאול אותי על כל דבר שקורה בעיר תל-אביב. איך אוכל לסייע?')">
+        <button onclick="audioEngine.speak('שׁלום, אני תֵל-מָה, העוזרת האישית שלךָ. אֶפשר לשׁאוֹל אותי על כל מה שקוּרֵה בעִיר תל-אביב. איך אוּכַל לסייע?')">
             <span>Play</span>
+        </button>
+        <button onclick="receiveAccessToken('ddd')">
+            <span>Reload</span>
         </button>
         <button id="restart" class="message-start" onclick="reset_conversation()">
             <img alt="Start"  width="24" height="24" src="./assets/img/power-on-24.png" />
@@ -116,7 +119,7 @@
             const locationDiv = document.getElementById('location');
             const countDiv = document.getElementById("count");
 
-            // start of speech recognition block
+            //#region Speech recognition block
             const recogniztion_started = () => {
                 start_img.src = 'https://www.google.com/intl/en/chrome/assets/common/images/content/mic-animate.gif';
             }
@@ -139,9 +142,36 @@
             function speak(text) {
                 audioEngine.speak(text);
             }
-            // end of speech recognition block            
+            //#endregion end of speech recognition block            
 
-            // start of geolocation block
+            //#region Receive messages from native code
+            function receivePlatform (platform) {
+                console.log(platform)
+                localStorage.setItem("platform", platform);
+            }
+
+            function receiveAccessToken(accessToken) {
+                
+                console.log("receiveAccessToken called")
+                var token = jwt_decode(accessToken);
+
+                var cnt = parseInt(countDiv.innerText, 10);
+                console.log("Count: " + cnt)
+                if( cnt == 0 ) {
+                    dfMessenger.renderCustomText(`${token.name} שלום`)
+                }
+                countDiv.textContent = cnt + 1;
+                localStorage.setItem("accessToken", accessToken);
+
+                const expirationDiv = document.getElementById("expirationTime");
+                var d = new Date(token.exp * 1000);
+                expirationDiv.innerText = d.toLocaleString()
+
+                return true;
+            }            
+            //#endregion 
+
+            //#region Geolocation block
             function geoSuccess(position) {
 
                 var location = `${position.coords.latitude},${position.coords.longitude}`
@@ -168,46 +198,21 @@
                 const watchID = navigator.geolocation.watchPosition(geoSuccess, geoError);
                 console.log(`WatchId: ${watchID}`)
             }
-            // end of geolocation block
+            //#endregion Geolocation block
 
-            // Authentication stuff
-            function receiveAccessToken(accessToken) {
-                
-                console.log("receiveAccessToken called")
-                var token = jwt_decode(accessToken);
-
-                var cnt = parseInt(countDiv.innerText, 10);
-                console.log("Count: " + cnt)
-                if( cnt == 0 ) {
-                    dfMessenger.renderCustomText(`${token.name} שלום`)
-                }
-                countDiv.textContent = cnt + 1;
-                localStorage.setItem("accessToken", accessToken);
-
-                const expirationDiv = document.getElementById("expirationTime");
-                var d = new Date(token.exp * 1000);
-                expirationDiv.innerText = d.toLocaleString()
-
-                return true;
-            }
-
+            //#region Authentication stuff
             function expire() {
 
                 webViewInterface = window.Native
                 webViewInterface.refreshAccessToken();
 
             }
-            // End of Authentication stuff
+            //#endregion End of Authentication stuff
 
-            //
-            // DF Messenger event handlers
-            //
+            //#region DF Messenger event handlers
             function reset_conversation() {
                 dfMessenger.sendRequest('event', 'reset_conversation');    
             }
-            window.addEventListener('df-user-input-entered', (event) => {
-                init();
-            })
             window.addEventListener('df-user-input-entered', (event) => {
                 init();
             })
@@ -235,19 +240,35 @@
             const init = () => {
 
                 try {
+                    
                     const jwt = localStorage.getItem("accessToken");
                     const token = jwt_decode(jwt);
+
+                    const platform = localStorage.getItem("platform");
 
                     const coordinates = locationDiv.innerText.split(",");
                     const latitude = parseFloat(coordinates[0]);
                     const longitude = parseFloat(coordinates[1]);
+
+                    const queryParams = {
+                        parameters:{
+                            "jwt": jwt,
+                            "userEmail": token["signInNamesInfo.emailAddress"],
+                            "userName": token.name,
+                            "userId": token["signInNames.citizenId"],
+                            "latitude": latitude,
+                            "longitude" : longitude,
+                            "platform": platform
+                        }
+                    };
+
+                    dfMessenger.setQueryParameters(queryParams) 
+
                 } catch(ex) {
                     console.log(ex.message)
                 }
             }
-            //
-            // End of DF Messenger event handlers
-            //
+            //#endregion End of DF Messenger event handlers
         </script>
     </body>
 </html>
